@@ -1,0 +1,6 @@
+Flask
+Flask-RESTful
+Flask_SQLAlchemy
+Marshmallow
+Flask-Marshmallow
+Flask-JWT-Extended
