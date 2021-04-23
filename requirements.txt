@@ -4,3 +4,4 @@ Flask_SQLAlchemy
 Marshmallow
 Flask-Marshmallow
 Flask-JWT-Extended
+marshmallow-sqlalchemy
