@@ -32,7 +32,6 @@ class ClientEmailSignUp(Resource):
         try:
             data_received = request.get_json()
             client = client_schema.load(data_received)  # Basically creates a ClientModel object
-            print(client.first_name)
         except ValidationError as err:
             return err.messages, 400
 

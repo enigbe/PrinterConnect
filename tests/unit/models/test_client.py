@@ -10,7 +10,7 @@ class ClientTest(TestCase):
         self.assertEqual(client.username, 'jane_d')
         self.assertEqual(client.first_name, 'Jane')
         self.assertEqual(client.last_name, 'Doe')
-        self.assertEqual(client.password, '12345')
+
 
     def test_client_repr(self):
         client = ClientModel('janedoe@email.com', 'jane_d', 'jane', 'doe', '12345')

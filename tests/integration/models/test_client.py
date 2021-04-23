@@ -1,8 +1,16 @@
+from werkzeug.security import generate_password_hash, check_password_hash
 from tests.base_test import BaseTest
 from models.client.client import ClientModel
 
 
 class ClientTest(BaseTest):
+    def test_verify_password(self):
+        with self.app_context():
+            client = ClientModel('janedoe@email.com', 'jane_d', 'jane', 'doe', '12345')
+            verified_password = client.verify_password('12345')
+
+            self.assertIs(verified_password, True)
+
     def test_find_client_with_email(self):
         with self.app_context():
             client = ClientModel('janedoe@email.com', 'jane_d', 'jane', 'doe', '12345')
