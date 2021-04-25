@@ -11,9 +11,14 @@ class ClientTest(TestCase):
         self.assertEqual(client.first_name, 'Jane')
         self.assertEqual(client.last_name, 'Doe')
 
-
     def test_client_repr(self):
         client = ClientModel('janedoe@email.com', 'jane_d', 'jane', 'doe', '12345')
         repr_output = '<Client => Jane Doe: [@jane_d - (janedoe@email.com)]>'
 
         self.assertEqual(client.__repr__(), repr_output)
+
+    def test_verify_password(self):
+        client = ClientModel('janedoe@email.com', 'jane_d', 'jane', 'doe', '12345')
+        verified_password = client.verify_password('12345')
+
+        self.assertIs(verified_password, True)

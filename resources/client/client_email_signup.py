@@ -1,4 +1,3 @@
-from sqlite3 import IntegrityError
 from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
@@ -31,7 +30,7 @@ class ClientEmailSignUp(Resource):
         # 1. Deserialize and validate request body
         try:
             data_received = request.get_json()
-            client = client_schema.load(data_received)  # Basically creates a ClientModel object
+            client = client_schema.load(data_received)  # Basically creates a ClientModel object on the fly
         except ValidationError as err:
             return err.messages, 400
 
