@@ -1,3 +1,6 @@
+from unittest.mock import patch
+from requests import Response
+
 from models.client.client import ClientModel
 from tests.base_test import BaseTest
 from schema.client.client import ClientSchema
@@ -83,3 +86,19 @@ class ClientEmailSignUpTest(BaseTest):
 
                 expected_response_data = {'msg': 'A user with username \'{}\' already exists.'.format('jane_d')}
                 self.assertEqual(expected_response_data, response.get_json())
+
+    def test_verify_email(self):
+        with self.app() as test_client:
+            with self.app_context():
+                with patch('models.client.client.ClientModel.verify_email') as mocked_verify_email:
+                    mocked_verify_email.return_value = Response()
+                    request_details = {
+                        'email': 'janedoe@email.com',
+                        'username': 'jane_d',
+                        'first_name': 'Jane',
+                        'last_name': 'Doe',
+                        'password': '12345678'
+                    }
+
+                    response = test_client.post('/client/signup/email', json=request_details)
+                    mocked_verify_email.assert_called_once()
