@@ -1,4 +1,7 @@
 from unittest import TestCase
+from unittest.mock import patch
+from requests import Response
+
 from models.client.client import ClientModel
 
 
@@ -22,3 +25,10 @@ class ClientTest(TestCase):
         verified_password = client.verify_password('12345')
 
         self.assertIs(verified_password, True)
+
+    def test_verify_email(self):
+        client = ClientModel('janedoe@email.com', 'jane_d', 'Jane', 'Doe', '012345678')
+        with patch('models.client.client.ClientModel.verify_email') as mocked_verify_email:
+            mocked_verify_email.return_value = Response()
+            response = client.verify_email()
+            self.assertIsInstance(response, Response)

@@ -1,15 +1,19 @@
+import traceback
+
 from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 
 from schema.client.client import ClientSchema
 from models.client.client import ClientModel
+from libs.mailgun import MailgunException
 
 client_schema = ClientSchema()
 
 EMAIL_ALREADY_EXISTS = 'A user with email \'{}\' already exists.'
 USERNAME_ALREADY_EXISTS = 'A user with username \'{}\' already exists.'
-CLIENT_CREATION_SUCCESSFUL = 'Client account created successfully. Check email to verify account'
+CLIENT_CREATION_SUCCESSFUL = 'Client account created successfully. Check your email to activate your account'
+ACCOUNT_CREATION_FAILED = 'Account creation failed. Please try again.'
 
 
 class ClientEmailSignUp(Resource):
@@ -31,6 +35,7 @@ class ClientEmailSignUp(Resource):
         try:
             data_received = request.get_json()
             client = client_schema.load(data_received)  # Basically creates a ClientModel object on the fly
+            # print(client)
         except ValidationError as err:
             return err.messages, 400
 
@@ -43,6 +48,16 @@ class ClientEmailSignUp(Resource):
             # 3. If 2 above is false, create a new client and save to db
 
         else:
-            client.save_client_to_db()
-            # 4. Return successful creation message with 200 OK status code
-            return {'msg': CLIENT_CREATION_SUCCESSFUL}, 201
+            try:
+                # save client to db
+                client.save_client_to_db()
+                # send email
+                client.verify_email()
+                # 4. Return successful creation message with 200 OK status code
+                return {'msg': CLIENT_CREATION_SUCCESSFUL}, 201
+            except MailgunException as err:
+                client.delete_client_from_db()
+                return {'msg': str(err)}, 500
+            except:
+                traceback.print_exc()
+                return {'msg': ACCOUNT_CREATION_FAILED}, 500
