@@ -3,18 +3,6 @@ from requests import Response
 from werkzeug.security import generate_password_hash, check_password_hash
 from db import db
 from libs.mailgun import Mailgun
-# SUBJECT = 'Account Verification'
-# TEXT = """
-# Hello {},
-#
-# Welcome to PrinterConnect.
-#
-# To verify your identity, click on this link - ({})
-#
-# If this email was sent to you in error, please disregard.
-#
-# Warm regards.
-# """
 
 
 class ClientModel(db.Model):

@@ -12,7 +12,7 @@ client_schema = ClientSchema()
 
 EMAIL_ALREADY_EXISTS = 'A user with email \'{}\' already exists.'
 USERNAME_ALREADY_EXISTS = 'A user with username \'{}\' already exists.'
-CLIENT_CREATION_SUCCESSFUL = 'Client account created successfully. Check your email to activate and verify your account'
+CLIENT_CREATION_SUCCESSFUL = 'Client account created successfully. Check your email to activate your account'
 ACCOUNT_CREATION_FAILED = 'Account creation failed. Please try again.'
 
 

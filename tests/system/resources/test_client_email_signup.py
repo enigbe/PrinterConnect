@@ -20,8 +20,11 @@ class ClientEmailSignUpTest(BaseTest):
                     'password': '12345'
                 }
 
-                response = test_client.post('/client/signup/email', json=signup_details, headers={'Content-Type':
-                                                                                                      'application/json'})
+                response = test_client.post(
+                    '/client/signup/email',
+                    json=signup_details,
+                    headers={'Content-Type': 'application/json'}
+                )
 
                 self.assertEqual(201, response.status_code)
 
@@ -50,13 +53,21 @@ class ClientEmailSignUpTest(BaseTest):
                     'password': '12345'
                 }
 
-                test_client.post('/client/signup/email', json=first_signup_details, headers={'Content-Type':
-                                                                                           'application/json'})
-                response = test_client.post('/client/signup/email', json=second_signup_details, headers={'Content-Type':
-                                                                                                      'application/json'})
+                test_client.post(
+                    '/client/signup/email',
+                    json=first_signup_details,
+                    headers={'Content-Type': 'application/json'}
+                )
+                response = test_client.post(
+                    '/client/signup/email',
+                    json=second_signup_details,
+                    headers={'Content-Type': 'application/json'}
+                )
                 self.assertEqual(400, response.status_code)
 
-                expected_response_data = {'msg': 'A user with email \'{}\' already exists.'.format('janedoe@email.com')}
+                expected_response_data = {
+                    'msg': 'A user with email \'{}\' already exists.'.format('janedoe@email.com')
+                }
                 self.assertEqual(expected_response_data, response.get_json())
 
     def test_client_unique_username(self):
@@ -78,10 +89,16 @@ class ClientEmailSignUpTest(BaseTest):
                     'password': '12345'
                 }
 
-                test_client.post('/client/signup/email', json=first_signup_details, headers={'Content-Type':
-                                                                                           'application/json'})
-                response = test_client.post('/client/signup/email', json=second_signup_details, headers={'Content-Type':
-                                                                                                      'application/json'})
+                test_client.post(
+                    '/client/signup/email',
+                    json=first_signup_details,
+                    headers={'Content-Type': 'application/json'}
+                )
+                response = test_client.post(
+                    '/client/signup/email',
+                    json=second_signup_details,
+                    headers={'Content-Type': 'application/json'}
+                )
                 self.assertEqual(400, response.status_code)
 
                 expected_response_data = {'msg': 'A user with username \'{}\' already exists.'.format('jane_d')}
@@ -102,3 +119,7 @@ class ClientEmailSignUpTest(BaseTest):
 
                     response = test_client.post('/client/signup/email', json=request_details)
                     mocked_verify_email.assert_called_once()
+                    self.assertEqual(response.status_code, 201)
+                    expected_dict = {
+                        'msg': 'Client account created successfully. Check your email to activate your account'}
+                    self.assertDictEqual(expected_dict, response.get_json())
