@@ -5,6 +5,7 @@ from requests import Response, post
 MISSING_MAILGUN_API_KEY = 'Missing Mailgun API key.'
 MISSING_MAILGUN_DOMAIN = 'Missing Mailgun Domain.'
 ERROR_SENDING_EMAIL = 'Error in sending verification email. Client registration failed.'
+MISSING_MAILGUN_EMAIL = 'Missing Mailgun email.'
 
 
 class MailgunException(Exception):
@@ -25,6 +26,9 @@ class Mailgun:
 
         if cls.MAILGUN_DOMAIN is None:
             raise MailgunException(MISSING_MAILGUN_DOMAIN)
+
+        if cls.MAILGUN_EMAIL is None:
+            raise MailgunException(MISSING_MAILGUN_EMAIL)
 
         response = post(
             f'https://api.mailgun.net/v3/{cls.MAILGUN_DOMAIN}/messages',

@@ -6,6 +6,7 @@ from marshmallow import ValidationError
 
 from schema.client.client import ClientSchema
 from models.client.client import ClientModel
+from models.client.confirmation import ConfirmationModel
 from libs.mailgun import MailgunException
 
 client_schema = ClientSchema()
@@ -34,30 +35,40 @@ class ClientEmailSignUp(Resource):
         # 1. Deserialize and validate request body
         try:
             data_received = request.get_json()
-            client = client_schema.load(data_received)  # Basically creates a ClientModel object on the fly
-            # print(client)
+            data = client_schema.load(data_received)
         except ValidationError as err:
             return err.messages, 400
 
         # 2. Check if username or email fields already exist in db
-        if ClientModel.find_client_by_email(client.email):
-            return {'msg': EMAIL_ALREADY_EXISTS.format(client.email)}, 400
+        if ClientModel.find_client_by_email(data['email']):
+            return {'msg': EMAIL_ALREADY_EXISTS.format(data['email'])}, 400
 
-        elif ClientModel.find_client_by_username(client.username):
-            return {'msg': USERNAME_ALREADY_EXISTS.format(client.username)}, 400
+        elif ClientModel.find_client_by_username(data['username']):
+            return {'msg': USERNAME_ALREADY_EXISTS.format(data['username'])}, 400
             # 3. If 2 above is false, create a new client and save to db
 
         else:
             try:
-                # save client to db
+                # create client
+                client = ClientModel(**data)
+
+                # hash password and save client to db
+                client.hash_password(client.password)
                 client.save_client_to_db()
-                # send email
-                client.verify_email()
+
+                # create a confirmation property for the client just created
+                confirmation = ConfirmationModel(client.id)
+                confirmation.save_to_db()
+
+                # send verification email
+                client.send_verification_email()
+
                 # 4. Return successful creation message with 200 OK status code
                 return {'msg': CLIENT_CREATION_SUCCESSFUL}, 201
             except MailgunException as err:
-                client.delete_client_from_db()
+                client.delete_client_from_db()  # Roll back all changes
                 return {'msg': str(err)}, 500
             except:
                 traceback.print_exc()
+                client.delete_client_from_db()
                 return {'msg': ACCOUNT_CREATION_FAILED}, 500
