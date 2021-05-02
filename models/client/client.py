@@ -1,8 +1,11 @@
 from flask import request, url_for
 from requests import Response
 from werkzeug.security import generate_password_hash, check_password_hash
+
 from db import db
 from libs.mailgun import Mailgun
+from libs.strings import gettext
+from models.client.confirmation import ConfirmationModel
 
 
 class ClientModel(db.Model):
@@ -14,19 +17,20 @@ class ClientModel(db.Model):
     first_name = db.Column(db.String(120), nullable=False)
     last_name = db.Column(db.String(120), nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    is_activated = db.Column(db.Boolean, default=False)
 
-    def __init__(self, email: str, username: str, first_name: str, last_name: str, password: str,
-                 is_activated: bool = False) -> None:
-        self.email = email
-        self.username = username
-        self.first_name = first_name[0].upper() + first_name[1:].lower()
-        self.last_name = last_name[0].upper() + last_name[1:].lower()
-        self.password = generate_password_hash(password)
-        self.is_activated = is_activated
+    confirmation = db.relationship(
+        'ConfirmationModel',
+        lazy='dynamic',
+        cascade='all, delete-orphan',
+        back_populates='client'
+    )
 
     def __repr__(self) -> str:
         return '<Client => {} {}: [@{} - ({})]>'.format(self.first_name, self.last_name, self.username, self.email)
+
+    @property
+    def most_recent_confirmation(self) -> "ConfirmationModel":
+        return self.confirmation.order_by(db.desc(ConfirmationModel.expire_at)).first()
 
     @classmethod
     def find_client_by_email(cls, email: str) -> "ClientModel":
@@ -36,26 +40,20 @@ class ClientModel(db.Model):
     def find_client_by_username(cls, username: str) -> "ClientModel":
         return cls.query.filter_by(username=username).first()
 
+    def hash_password(self, password: str):
+        self.password = generate_password_hash(password)
+
     def verify_password(self, password: str):
         return check_password_hash(self.password, password)
 
-    def verify_email(self) -> Response:
-        # http://127.0.0.1:5000 + /client/activate/<string:username>
-        link = request.url_root[:-1] + url_for('activateclient', username=self.username)
-        client = self.first_name
+    def send_verification_email(self) -> Response:
+        # http://127.0.0.1:5000 + /client/confirmation/<string:confirmation_id>
+        link = request.url_root[:-1] + \
+               url_for('confirmation', confirmation_id=self.most_recent_confirmation.id)
+        client_name = self.first_name
 
-        subject = 'Account Verification'
-        text = f"""
-        Hello {client},
-
-        Welcome to PrinterConnect. 
-
-        To verify your identity, click on this link - ({link})
-
-        If this email was sent to you in error, please disregard.
-
-        Warm regards.
-        """
+        subject = gettext('clientmodel_verification_email_subject')
+        text = gettext('clientmodel_verification_email_text').format(client_name, link)
 
         return Mailgun.send_email([self.email], subject, text)
 

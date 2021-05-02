@@ -1,19 +1,15 @@
-import traceback
-
+# import traceback
 from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
 
 from schema.client.client import ClientSchema
 from models.client.client import ClientModel
+from models.client.confirmation import ConfirmationModel
 from libs.mailgun import MailgunException
+from libs.strings import gettext
 
 client_schema = ClientSchema()
-
-EMAIL_ALREADY_EXISTS = 'A user with email \'{}\' already exists.'
-USERNAME_ALREADY_EXISTS = 'A user with username \'{}\' already exists.'
-CLIENT_CREATION_SUCCESSFUL = 'Client account created successfully. Check your email to activate your account'
-ACCOUNT_CREATION_FAILED = 'Account creation failed. Please try again.'
 
 
 class ClientEmailSignUp(Resource):
@@ -34,30 +30,38 @@ class ClientEmailSignUp(Resource):
         # 1. Deserialize and validate request body
         try:
             data_received = request.get_json()
-            client = client_schema.load(data_received)  # Basically creates a ClientModel object on the fly
-            # print(client)
+            data = client_schema.load(data_received)
         except ValidationError as err:
             return err.messages, 400
 
         # 2. Check if username or email fields already exist in db
-        if ClientModel.find_client_by_email(client.email):
-            return {'msg': EMAIL_ALREADY_EXISTS.format(client.email)}, 400
+        if ClientModel.find_client_by_email(data['email']):
+            return {'msg': gettext('signup_email_already_exists').format(data['email'])}, 400
 
-        elif ClientModel.find_client_by_username(client.username):
-            return {'msg': USERNAME_ALREADY_EXISTS.format(client.username)}, 400
+        elif ClientModel.find_client_by_username(data['username']):
+            return {'msg': gettext('signup_username_already_exists').format(data['username'])}, 400
             # 3. If 2 above is false, create a new client and save to db
 
         else:
             try:
-                # save client to db
+                # create client
+                client = ClientModel(**data)
+                # hash password and save client to db
+                client.hash_password(client.password)
                 client.save_client_to_db()
-                # send email
-                client.verify_email()
+
+                # create a confirmation property for the client just created
+                confirmation = ConfirmationModel(client.id)
+                confirmation.save_to_db()
+                # send verification email
+                client.send_verification_email()
+
                 # 4. Return successful creation message with 200 OK status code
-                return {'msg': CLIENT_CREATION_SUCCESSFUL}, 201
+                return {'msg': gettext('signup_account_creation_successful')}, 201
             except MailgunException as err:
+                client.delete_client_from_db()  # Roll back all changes
+                return {'msg': err}, 500
+            except Exception as err:
+                # traceback.print_exc()
                 client.delete_client_from_db()
-                return {'msg': str(err)}, 500
-            except:
-                traceback.print_exc()
-                return {'msg': ACCOUNT_CREATION_FAILED}, 500
+                return {'msg': gettext('signup_account_creation_failed'), 'exception': str(err)}, 500
