@@ -1,0 +1,22 @@
+{
+  "mailgun_missing_api_key": "Missing Mailgun API key. API key failed to load.",
+  "mailgun_missing_domain": "Missing Mailgun Domain. Domain failed to load.",
+  "mailgun_missing_email": "Missing Mailgun email.",
+  "mailgun_error_sending_email": "Error in sending verification email. Client registration failed.",
+
+  "clientmodel_verification_email_subject": "Account Verification",
+  "clientmodel_verification_email_text": "Hello {},\n\nWelcome to PrinterConnect.\n\nTo verify your identity, click on this link: {}\n\nIf this email was sent to you in error, please disregard.\n\nWarm regards.",
+
+  "confirmation_not_found": "Confirmation reference for this account not found.",
+  "confirmation_expired": "Confirmation link has expired.",
+  "confirmation_successful": "{} activated successfully. You can now sign in.",
+  "confirmation_already_confirmed": "Client account already confirmed.",
+  "confirmation_client_not_found": "Client not found.",
+  "confirmation_email_resend_failed": "Failed to resend verification email.",
+  "confirmation_email_resent_successful": "Verification email resent successfully.",
+
+  "signup_email_already_exists": "A user with email \\'{}\\' already exists.",
+  "signup_username_already_exists": "A user with username \\'{}\\' already exists.",
+  "signup_account_creation_successful": "Client account created successfully. Check your email to activate your account",
+  "signup_account_creation_failed": "Account creation failed. Please try again."
+}

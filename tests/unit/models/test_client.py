@@ -3,32 +3,34 @@ from unittest.mock import patch
 from requests import Response
 
 from models.client.client import ClientModel
+from libs.test_objects import client
 
 
 class ClientTest(TestCase):
     def test_client_constructor(self):
-        client = ClientModel('janedoe@email.com', 'jane_d', 'jane', 'doe', '12345')
+        sample_client = ClientModel(**client.copy())
 
-        self.assertEqual(client.email, 'janedoe@email.com')
-        self.assertEqual(client.username, 'jane_d')
-        self.assertEqual(client.first_name, 'Jane')
-        self.assertEqual(client.last_name, 'Doe')
+        self.assertEqual(sample_client.email, 'janedoe@email.com')
+        self.assertEqual(sample_client.username, 'jane_d')
+        self.assertEqual(sample_client.first_name, 'jane')
+        self.assertEqual(sample_client.last_name, 'doe')
 
     def test_client_repr(self):
-        client = ClientModel('janedoe@email.com', 'jane_d', 'jane', 'doe', '12345')
-        repr_output = '<Client => Jane Doe: [@jane_d - (janedoe@email.com)]>'
+        sample_client = ClientModel(**client.copy())
+        repr_output = '<Client => jane doe: [@jane_d - (janedoe@email.com)]>'
 
-        self.assertEqual(client.__repr__(), repr_output)
+        self.assertEqual(sample_client.__repr__(), repr_output)
 
     def test_verify_password(self):
-        client = ClientModel('janedoe@email.com', 'jane_d', 'jane', 'doe', '12345')
-        verified_password = client.verify_password('12345')
+        sample_client = ClientModel(**client.copy())
+        sample_client.hash_password(sample_client.password)
+        verified_password = sample_client.verify_password('12345678')
 
         self.assertIs(verified_password, True)
 
-    def test_verify_email(self):
-        client = ClientModel('janedoe@email.com', 'jane_d', 'Jane', 'Doe', '012345678')
-        with patch('models.client.client.ClientModel.verify_email') as mocked_verify_email:
-            mocked_verify_email.return_value = Response()
-            response = client.verify_email()
-            self.assertIsInstance(response, Response)
+    @patch('models.client.client.ClientModel.send_verification_email')
+    def test_verify_email(self, mock_send_verification_email):
+        sample_client = ClientModel(**client.copy())
+        mock_send_verification_email.return_value = Response()
+        response = sample_client.send_verification_email()
+        self.assertIsInstance(response, Response)

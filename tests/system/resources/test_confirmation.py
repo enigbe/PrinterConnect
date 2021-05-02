@@ -4,6 +4,7 @@ from requests import Response
 from models.client.client import ClientModel
 from models.client.confirmation import ConfirmationModel
 from tests.base_test import BaseTest
+from libs.test_objects import client
 
 
 class ConfirmationTest(BaseTest):
@@ -13,19 +14,12 @@ class ConfirmationTest(BaseTest):
                 # # 1. Create a client with confirmation
                 # # 2. Get the confirmation
                 # # 3. Assert
-                client_request = {
-                    'email': 'janedoe@email.com',
-                    'username': 'jane_d',
-                    'first_name': 'jane',
-                    'last_name': 'doe',
-                    'password': '0123456789'
-                }
-                client = ClientModel(**client_request)
-                client.save_client_to_db()
+                sample_client = ClientModel(**client.copy())
+                sample_client.save_client_to_db()
 
                 confirmation = ConfirmationModel(1)
                 confirmation.save_to_db()
-                confirmation_id = client.most_recent_confirmation.id
+                confirmation_id = sample_client.most_recent_confirmation.id
                 url = '/client/confirmation/' + confirmation_id
                 response_confirmation = test_client.get(url)
 
@@ -38,15 +32,9 @@ class ConfirmationTest(BaseTest):
         with self.app() as test_client:
             with self.app_context():
                 mock_send_verification_email.return_value = Response()
-                client_request = {
-                    'email': 'janedoe@email.com',
-                    'username': 'jane_d',
-                    'first_name': 'jane',
-                    'last_name': 'doe',
-                    'password': '0123456789'
-                }
-                client = ClientModel(**client_request)
-                client.save_client_to_db()
+
+                sample_client = ClientModel(**client.copy())
+                sample_client.save_client_to_db()
 
                 confirmation = ConfirmationModel(1)
                 confirmation.save_to_db()
@@ -60,15 +48,8 @@ class ConfirmationTest(BaseTest):
         with self.app() as test_client:
             with self.app_context():
 
-                client_request = {
-                    'email': 'janedoe@email.com',
-                    'username': 'jane_d',
-                    'first_name': 'jane',
-                    'last_name': 'doe',
-                    'password': '0123456789'
-                }
-                client = ClientModel(**client_request)
-                client.save_client_to_db()
+                sample_client = ClientModel(**client.copy())
+                sample_client.save_client_to_db()
 
                 confirmation = ConfirmationModel(1)
                 confirmation.save_to_db()
@@ -79,5 +60,3 @@ class ConfirmationTest(BaseTest):
                 self.assertIn('current_time', response.get_json())
                 self.assertIn('confirmation', response.get_json())
                 self.assertIn('id', response.get_json()['confirmation'][0])
-
-

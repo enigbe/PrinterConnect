@@ -8,7 +8,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
     # Field Validation
     email = fields.Email(
         required=True,
-        validate=validate.Email(error='Enter a valid email address.')
+        validate=validate.Email()
     )
     username = fields.String(
         validate=validate.Length(min=2, max=20, error='Username must be between 2 and 15 characters.')

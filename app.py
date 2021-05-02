@@ -12,6 +12,7 @@ app = Flask(__name__)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL', 'sqlite:///pc_test.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SECRET_KEY'] = os.environ.get('PRINTERCONNECT_SECRET_KEY')
+app.config['JWT_SECRET_KEY'] = os.environ.get('PRINTERCONNECT_JWT_SECRET_KEY')
 
 api = Api(app)
 jwt = JWTManager(app)
@@ -34,4 +35,4 @@ if __name__ == '__main__':
     db.init_app(app)
     ma.init_app(app)
 
-    app.run(port=5000, debug=True)
+    app.run(port=5001, debug=True)

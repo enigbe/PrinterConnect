@@ -7,6 +7,20 @@ from libs.mailgun import Mailgun
 from models.client.confirmation import ConfirmationModel
 
 
+VERIFICATION_EMAIL_SUBJECT = 'Account Verification'
+VERIFICATION_EMAIL_TEXT = """
+        Hello {},
+
+        Welcome to PrinterConnect. 
+
+        To verify your identity, click on this link: {}
+
+        If this email was sent to you in error, please disregard.
+
+        Warm regards.
+        """
+
+
 class ClientModel(db.Model):
     __tablename__ = 'clients'
 
@@ -16,7 +30,6 @@ class ClientModel(db.Model):
     first_name = db.Column(db.String(120), nullable=False)
     last_name = db.Column(db.String(120), nullable=False)
     password = db.Column(db.String(120), nullable=False)
-    # is_activated = db.Column(db.Boolean, default=False)
 
     confirmation = db.relationship(
         'ConfirmationModel',
@@ -54,18 +67,8 @@ class ClientModel(db.Model):
                                     )
         client_name = self.first_name
 
-        subject = 'Account Verification'
-        text = f"""
-        Hello {client_name},
-
-        Welcome to PrinterConnect. 
-
-        To verify your identity, click on this link - ({link})
-
-        If this email was sent to you in error, please disregard.
-
-        Warm regards.
-        """
+        subject = VERIFICATION_EMAIL_SUBJECT
+        text = VERIFICATION_EMAIL_TEXT.format(client_name, link)
 
         return Mailgun.send_email([self.email], subject, text)
 

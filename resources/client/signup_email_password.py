@@ -1,5 +1,4 @@
-import traceback
-
+# import traceback
 from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
@@ -51,7 +50,6 @@ class ClientEmailSignUp(Resource):
             try:
                 # create client
                 client = ClientModel(**data)
-
                 # hash password and save client to db
                 client.hash_password(client.password)
                 client.save_client_to_db()
@@ -59,7 +57,6 @@ class ClientEmailSignUp(Resource):
                 # create a confirmation property for the client just created
                 confirmation = ConfirmationModel(client.id)
                 confirmation.save_to_db()
-
                 # send verification email
                 client.send_verification_email()
 
@@ -67,8 +64,8 @@ class ClientEmailSignUp(Resource):
                 return {'msg': CLIENT_CREATION_SUCCESSFUL}, 201
             except MailgunException as err:
                 client.delete_client_from_db()  # Roll back all changes
-                return {'msg': str(err)}, 500
-            except:
-                traceback.print_exc()
+                return {'msg': err}, 500
+            except Exception as err:
+                # traceback.print_exc()
                 client.delete_client_from_db()
-                return {'msg': ACCOUNT_CREATION_FAILED}, 500
+                return {'msg': ACCOUNT_CREATION_FAILED, 'exception': str(err)}, 500

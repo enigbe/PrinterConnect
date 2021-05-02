@@ -4,6 +4,7 @@ from requests import Response
 from models.client.client import ClientModel
 from tests.base_test import BaseTest
 from schema.client.client import ClientSchema
+from libs.test_objects import client
 
 client_schema = ClientSchema()
 
@@ -15,19 +16,14 @@ class ClientEmailSignUpTest(BaseTest):
             with self.app_context():
                 mocked_send_verification_email.return_value = Response()
 
-                signup_details = {
-                    'email': 'janedoe@email.com',
-                    'username': 'jane_d',
-                    'first_name': 'Jane',
-                    'last_name': 'Doe',
-                    'password': '123456789'
-                }
+                signup_details = client.copy()
 
                 response = test_client.post(
                     '/client/signup/email',
                     json=signup_details,
                     headers={'Content-Type': 'application/json'}
                 )
+                print(response.get_json())
                 self.assertEqual(201, response.status_code)
 
                 self.assertIsNotNone(ClientModel.find_client_by_username('jane_d'))
@@ -42,22 +38,10 @@ class ClientEmailSignUpTest(BaseTest):
         with self.app() as test_client:
             with self.app_context():
                 mocked_send_verification_email.return_value = Response()
-
-                first_signup_details = {
-                    'email': 'janedoe@email.com',
-                    'username': 'jane_d',
-                    'first_name': 'Jane',
-                    'last_name': 'Doe',
-                    'password': '123456789'
-                }
-                # Different signup details with same email as above
-                second_signup_details = {
-                    'email': 'janedoe@email.com',
-                    'username': 'john_d',
-                    'first_name': 'John',
-                    'last_name': 'Doe',
-                    'password': '123456789'
-                }
+                # Two client requests with same email (details)
+                first_signup_details = client.copy()
+                second_signup_details = client.copy()
+                second_signup_details['username'] = 'john_d'
 
                 test_client.post(
                     '/client/signup/email',
@@ -80,21 +64,11 @@ class ClientEmailSignUpTest(BaseTest):
     def test_client_unique_username(self, mocked_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
-                first_signup_details = {
-                    'email': 'janedoe@email.com',
-                    'username': 'jane_d',
-                    'first_name': 'Jane',
-                    'last_name': 'Doe',
-                    'password': '123456789'
-                }
-                # Different signup details with same username as above
-                second_signup_details = {
-                    'email': 'johndoe@email.com',
-                    'username': 'jane_d',
-                    'first_name': 'John',
-                    'last_name': 'Doe',
-                    'password': '123456789'
-                }
+                mocked_send_verification_email.return_value = Response()
+
+                first_signup_details = client.copy()
+                second_signup_details = client.copy()
+                second_signup_details['email'] = 'johndoe@email.com'
 
                 test_client.post(
                     '/client/signup/email',
@@ -116,15 +90,9 @@ class ClientEmailSignUpTest(BaseTest):
         with self.app() as test_client:
             with self.app_context():
                 mocked_send_verification_email.return_value = Response()
-                request_details = {
-                    'email': 'janedoe@email.com',
-                    'username': 'jane_d',
-                    'first_name': 'Jane',
-                    'last_name': 'Doe',
-                    'password': '12345678'
-                }
+                signup_details = client.copy()
 
-                response = test_client.post('/client/signup/email', json=request_details)
+                response = test_client.post('/client/signup/email', json=signup_details)
                 mocked_send_verification_email.assert_called_once()
 
                 self.assertEqual(response.status_code, 201)
