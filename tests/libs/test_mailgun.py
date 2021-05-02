@@ -2,7 +2,7 @@ from unittest.mock import patch
 from requests import Response
 from tests.base_test import BaseTest
 from libs.mailgun import Mailgun, MailgunException
-from libs.test_objects import EmailDetails
+from tests.test_data import EmailDetails
 
 MISSING_MAILGUN_API_KEY = 'Missing Mailgun API key.'
 MISSING_MAILGUN_DOMAIN = 'Missing Mailgun Domain.'

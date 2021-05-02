@@ -7,13 +7,9 @@ from schema.client.client import ClientSchema
 from models.client.client import ClientModel
 from models.client.confirmation import ConfirmationModel
 from libs.mailgun import MailgunException
+from libs.strings import gettext
 
 client_schema = ClientSchema()
-
-EMAIL_ALREADY_EXISTS = 'A user with email \'{}\' already exists.'
-USERNAME_ALREADY_EXISTS = 'A user with username \'{}\' already exists.'
-CLIENT_CREATION_SUCCESSFUL = 'Client account created successfully. Check your email to activate your account'
-ACCOUNT_CREATION_FAILED = 'Account creation failed. Please try again.'
 
 
 class ClientEmailSignUp(Resource):
@@ -40,10 +36,10 @@ class ClientEmailSignUp(Resource):
 
         # 2. Check if username or email fields already exist in db
         if ClientModel.find_client_by_email(data['email']):
-            return {'msg': EMAIL_ALREADY_EXISTS.format(data['email'])}, 400
+            return {'msg': gettext('signup_email_already_exists').format(data['email'])}, 400
 
         elif ClientModel.find_client_by_username(data['username']):
-            return {'msg': USERNAME_ALREADY_EXISTS.format(data['username'])}, 400
+            return {'msg': gettext('signup_username_already_exists').format(data['username'])}, 400
             # 3. If 2 above is false, create a new client and save to db
 
         else:
@@ -61,11 +57,11 @@ class ClientEmailSignUp(Resource):
                 client.send_verification_email()
 
                 # 4. Return successful creation message with 200 OK status code
-                return {'msg': CLIENT_CREATION_SUCCESSFUL}, 201
+                return {'msg': gettext('signup_account_creation_successful')}, 201
             except MailgunException as err:
                 client.delete_client_from_db()  # Roll back all changes
                 return {'msg': err}, 500
             except Exception as err:
                 # traceback.print_exc()
                 client.delete_client_from_db()
-                return {'msg': ACCOUNT_CREATION_FAILED, 'exception': str(err)}, 500
+                return {'msg': gettext('signup_account_creation_failed'), 'exception': str(err)}, 500

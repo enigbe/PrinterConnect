@@ -4,7 +4,7 @@ from requests import Response
 from models.client.client import ClientModel
 from tests.base_test import BaseTest
 from schema.client.client import ClientSchema
-from libs.test_objects import client
+from tests.test_data import client
 
 client_schema = ClientSchema()
 

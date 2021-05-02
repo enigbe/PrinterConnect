@@ -3,7 +3,7 @@ from unittest.mock import patch
 from requests import Response
 
 from models.client.client import ClientModel
-from libs.test_objects import client
+from libs.strings import client
 
 
 class ClientTest(TestCase):

@@ -4,7 +4,7 @@ from requests import Response
 from models.client.client import ClientModel
 from models.client.confirmation import ConfirmationModel
 from tests.base_test import BaseTest
-from libs.test_objects import client
+from tests.test_data import client
 
 
 class ConfirmationTest(BaseTest):

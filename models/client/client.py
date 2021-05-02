@@ -4,21 +4,8 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 from db import db
 from libs.mailgun import Mailgun
+from libs.strings import gettext
 from models.client.confirmation import ConfirmationModel
-
-
-VERIFICATION_EMAIL_SUBJECT = 'Account Verification'
-VERIFICATION_EMAIL_TEXT = """
-        Hello {},
-
-        Welcome to PrinterConnect. 
-
-        To verify your identity, click on this link: {}
-
-        If this email was sent to you in error, please disregard.
-
-        Warm regards.
-        """
 
 
 class ClientModel(db.Model):
@@ -61,14 +48,12 @@ class ClientModel(db.Model):
 
     def send_verification_email(self) -> Response:
         # http://127.0.0.1:5000 + /client/confirmation/<string:confirmation_id>
-        link = request.url_root[:-1] + url_for(
-                                        'confirmation',
-                                        confirmation_id=self.most_recent_confirmation.id
-                                    )
+        link = request.url_root[:-1] + \
+               url_for('confirmation', confirmation_id=self.most_recent_confirmation.id)
         client_name = self.first_name
 
-        subject = VERIFICATION_EMAIL_SUBJECT
-        text = VERIFICATION_EMAIL_TEXT.format(client_name, link)
+        subject = gettext('clientmodel_verification_email_subject')
+        text = gettext('clientmodel_verification_email_text').format(client_name, link)
 
         return Mailgun.send_email([self.email], subject, text)
 

@@ -3,7 +3,7 @@ from marshmallow import ValidationError
 from schema.client.client import ClientSchema
 from tests.base_test import BaseTest
 from models.client.client import ClientModel
-from libs.test_objects import client
+from tests.test_data import client
 
 
 class ClientSchemaTest(BaseTest):

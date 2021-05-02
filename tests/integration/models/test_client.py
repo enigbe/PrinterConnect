@@ -1,7 +1,7 @@
 from models.client.confirmation import ConfirmationModel
 from tests.base_test import BaseTest
 from models.client.client import ClientModel
-from libs.test_objects import client
+from tests.test_data import client
 
 
 class ClientTest(BaseTest):

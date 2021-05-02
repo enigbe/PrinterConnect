@@ -18,5 +18,9 @@
   "signup_email_already_exists": "A user with email \\'{}\\' already exists.",
   "signup_username_already_exists": "A user with username \\'{}\\' already exists.",
   "signup_account_creation_successful": "Client account created successfully. Check your email to activate your account",
-  "signup_account_creation_failed": "Account creation failed. Please try again."
+  "signup_account_creation_failed": "Account creation failed. Please try again.",
+
+  "signin_invalid_credentials": "Invalid sign in credentials.",
+  "signin_successful": "Sign in successful.",
+  "signin_account_not_confirmed": "Your account has not been confirmed. Please check your email for the confirmation link or request a new confirmation link."
 }
