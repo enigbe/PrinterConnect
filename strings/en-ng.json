@@ -15,8 +15,8 @@
   "confirmation_email_resend_failed": "Failed to resend verification email.",
   "confirmation_email_resent_successful": "Verification email resent successfully.",
 
-  "signup_email_already_exists": "A user with email \\'{}\\' already exists.",
-  "signup_username_already_exists": "A user with username \\'{}\\' already exists.",
+  "signup_email_already_exists": "A user with email '{}' already exists.",
+  "signup_username_already_exists": "A user with username '{}' already exists.",
   "signup_account_creation_successful": "Client account created successfully. Check your email to activate your account",
   "signup_account_creation_failed": "Account creation failed. Please try again.",
 

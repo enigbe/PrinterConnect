@@ -5,7 +5,7 @@ This is the parent of all non-unit, i.e. system and integration, tests.
 This BaseTest class allows the creation of (set up) new empty databases
 each time and clearing out (tear down) of these databases
 """
-
+import os
 from unittest import TestCase
 from app import app
 from db import db
@@ -16,6 +16,7 @@ class BaseTest(TestCase):
     def setUpClass(cls) -> None:
         # Create new database
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'
+        app.config['JWT_SECRET_KEY'] = os.urandom(16)
         with app.app_context():  # Creates application context and installs app in it
             db.init_app(app)
 
