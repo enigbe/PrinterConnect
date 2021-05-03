@@ -1,4 +1,4 @@
-# Client POST request Details
+# Client SignUp POST Request Details
 client = {
     'email': 'janedoe@email.com',
     'username': 'jane_d',
@@ -13,3 +13,10 @@ class EmailDetails:
     email = ['ochekliyeenigbe@gmail.com']
     subject = 'Account Verification'
     text = 'Hello, your account has been verified.'
+
+
+# Client SignIn POST Request Details
+client_signin = {
+    'email': 'janedoe@email.com',
+    'password': '12345678'
+}
