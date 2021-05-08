@@ -34,7 +34,7 @@ class ConfirmationTest(BaseTest):
             confirmation.delete_from_db()
             self.assertIsNone(sample_client.most_recent_confirmation)
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_find_confirmation_by_id(self, mock_send_verification_email):
         # 1. With a test client and in an application context, create a client and confirmation
         # (mock the send_verification_email method)
@@ -44,33 +44,43 @@ class ConfirmationTest(BaseTest):
                 mock_send_verification_email.return_value = Response()
 
                 sample_client = client.copy()
-                print(sample_client)
                 test_client.post('/client/signup/email', json=sample_client)
+
+                mock_send_verification_email.assert_called_once()
+
                 loaded_client = ClientModel.find_client_by_email('janedoe@email.com')
                 confirmation = ConfirmationModel.find_by_id(loaded_client.most_recent_confirmation.id)
+
                 self.assertIsInstance(confirmation, ConfirmationModel)
                 self.assertEqual(loaded_client.id, confirmation.client_id)
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_confirmation_has_expired(self, mock_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
                 mock_send_verification_email.return_value = Response()
+
                 sample_client = client.copy()
                 test_client.post('/client/signup/email', json=sample_client)
+
+                mock_send_verification_email.assert_called_once()
+
                 loaded_client = ClientModel.find_client_by_email('janedoe@email.com')
                 confirmation = ConfirmationModel.find_by_id(loaded_client.most_recent_confirmation.id)
 
                 self.assertEqual(confirmation.has_expired, False)
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_confirmation_forced_to_expire(self, mock_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
                 mock_send_verification_email.return_value = Response()
+
                 sample_client = client.copy()
                 test_client.post('/client/signup/email', json=sample_client)
                 loaded_client = ClientModel.find_client_by_email('janedoe@email.com')
+
+                mock_send_verification_email.assert_called_once()
 
                 confirmation = ConfirmationModel.find_by_id(loaded_client.most_recent_confirmation.id)
                 initial_expiration_time = confirmation.expire_at

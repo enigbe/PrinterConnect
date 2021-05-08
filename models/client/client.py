@@ -12,11 +12,13 @@ class ClientModel(db.Model):
     __tablename__ = 'clients'
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), nullable=False, unique=True, index=True)
-    username = db.Column(db.String(120), nullable=False, unique=True, index=True)
+    email = db.Column(db.String(120), unique=True, index=True)
+    username = db.Column(db.String(120), unique=True, index=True)
     first_name = db.Column(db.String(120), nullable=False)
     last_name = db.Column(db.String(120), nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    password = db.Column(db.String(120), nullable=True)
+    oauth_token = db.Column(db.String(120), nullable=False, default='empty')
+    # oauth_token_secret = db.Column(db.String(120), nullable=False, default='empty')
 
     confirmation = db.relationship(
         'ConfirmationModel',
@@ -40,8 +42,8 @@ class ClientModel(db.Model):
     def find_client_by_username(cls, username: str) -> "ClientModel":
         return cls.query.filter_by(username=username).first()
 
-    def hash_password(self, password: str):
-        self.password = generate_password_hash(password)
+    def hash_password(self):
+        self.password = generate_password_hash(self.password)
 
     def verify_password(self, password: str):
         return check_password_hash(self.password, password)

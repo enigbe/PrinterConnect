@@ -7,7 +7,7 @@ from schema.client.client import ClientSchema
 from models.client.client import ClientModel
 from libs.strings import gettext
 
-client_schema = ClientSchema(exclude=('username', 'first_name', 'last_name', 'is_activated'))
+client_schema = ClientSchema()
 
 
 class ClientEmailSignIn(Resource):

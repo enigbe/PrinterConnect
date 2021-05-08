@@ -29,7 +29,7 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
         model = ClientModel
         # load_instance = True
         load_only = ('password',)  # do not include when dumping data
-        dump_only = ('id', 'confirmation')  # do not include when loading data
+        dump_only = ('id', 'confirmation', 'oauth_token', 'oauth_token_secret',)  # do not include when loading data
 
     @pre_dump
     def _pre_dump(self, client: ClientModel, **kwargs):

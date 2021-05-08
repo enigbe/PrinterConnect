@@ -6,6 +6,7 @@
 
   "clientmodel_verification_email_subject": "Account Verification",
   "clientmodel_verification_email_text": "Hello {},\n\nWelcome to PrinterConnect.\n\nTo verify your identity, click on this link: {}\n\nIf this email was sent to you in error, please disregard.\n\nWarm regards.",
+  "clientmodel_empty_password": "Password field is empty.",
 
   "confirmation_not_found": "Confirmation reference for this account not found.",
   "confirmation_expired": "Confirmation link has expired.",
@@ -22,5 +23,11 @@
 
   "signin_invalid_credentials": "Invalid sign in credentials.",
   "signin_successful": "Sign in successful.",
-  "signin_account_not_confirmed": "Your account has not been confirmed. Please check your email for the confirmation link or request a new confirmation link."
+  "signin_account_not_confirmed": "Your account has not been confirmed. Please check your email for the confirmation link or request a new confirmation link.",
+
+  "set_password_client_not_found": "Client not found.",
+  "set_password_updated_successfully": "Password updated successfully.",
+
+  "github_authorization_rejected": "Verified github email is either private or not selected as public email. Signin with Github rejected."
+
 }

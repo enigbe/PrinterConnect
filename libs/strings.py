@@ -5,9 +5,6 @@ strings_file = 'en-ng'
 cached_strings = {}
 base_directory = Path(__file__).resolve().parent.parent
 strings_directory = base_directory.joinpath('strings')
-print(strings_directory)
-
-path = 'string'
 
 
 def refresh_cached_string():

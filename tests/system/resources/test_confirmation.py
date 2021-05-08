@@ -27,7 +27,7 @@ class ConfirmationTest(BaseTest):
                 self.assertEqual(response_confirmation.status_code, 200)
                 self.assertEqual(response_confirmation.get_json(), expected_response)
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_confirmation_successfully_resent(self, mock_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
@@ -40,6 +40,8 @@ class ConfirmationTest(BaseTest):
                 confirmation.save_to_db()
 
                 response = test_client.post('/client/resend_confirmation/janedoe@email.com')
+
+                mock_send_verification_email.assert_called_once()
                 self.assertEqual(response.status_code, 201)
                 expected = {'msg': 'Verification email resent successfully.'}
                 self.assertEqual(response.get_json(), expected)
@@ -55,7 +57,6 @@ class ConfirmationTest(BaseTest):
                 confirmation.save_to_db()
 
                 response = test_client.get('/client/resend_confirmation/janedoe@email.com')
-                print(response.get_json())
                 self.assertEqual(response.status_code, 200)
                 self.assertIn('current_time', response.get_json())
                 self.assertIn('confirmation', response.get_json())
