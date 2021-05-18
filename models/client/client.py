@@ -2,7 +2,7 @@ from flask import request, url_for
 from requests import Response
 from werkzeug.security import generate_password_hash, check_password_hash
 
-from db import db
+from data_base import db
 from libs.mailgun import Mailgun
 from libs.strings import gettext
 from models.client.confirmation import ConfirmationModel
@@ -12,11 +12,13 @@ class ClientModel(db.Model):
     __tablename__ = 'clients'
 
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(120), nullable=False, unique=True, index=True)
-    username = db.Column(db.String(120), nullable=False, unique=True, index=True)
-    first_name = db.Column(db.String(120), nullable=False)
-    last_name = db.Column(db.String(120), nullable=False)
-    password = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(120), unique=True, index=True)
+    username = db.Column(db.String(120), unique=True, index=True)
+    first_name = db.Column(db.String(120), nullable=True)
+    last_name = db.Column(db.String(120), nullable=True)
+    password = db.Column(db.String(120), nullable=True)
+    oauth_token = db.Column(db.String(120), nullable=False, default='empty')
+    oauth_token_secret = db.Column(db.String(120), nullable=False, default='empty')
 
     confirmation = db.relationship(
         'ConfirmationModel',
@@ -44,12 +46,14 @@ class ClientModel(db.Model):
         self.password = generate_password_hash(password)
 
     def verify_password(self, password: str):
-        return check_password_hash(self.password, password)
+        try:
+            return check_password_hash(self.password, password)
+        except AttributeError:
+            return False
 
     def send_verification_email(self) -> Response:
         # http://127.0.0.1:5000 + /client/confirmation/<string:confirmation_id>
-        link = request.url_root[:-1] + \
-               url_for('confirmation', confirmation_id=self.most_recent_confirmation.id)
+        link = request.url_root[:-1] + url_for('confirmation', confirmation_id=self.most_recent_confirmation.id)
         client_name = self.first_name
 
         subject = gettext('clientmodel_verification_email_subject')

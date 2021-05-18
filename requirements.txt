@@ -7,3 +7,5 @@ Flask-JWT-Extended
 marshmallow-sqlalchemy
 requests
 python-dotenv
+Flask-OAuthlib
+oauth2

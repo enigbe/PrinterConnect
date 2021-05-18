@@ -1,7 +1,7 @@
 from time import time
 from uuid import uuid4
 
-from db import db
+from data_base import db
 
 EXPIRATION_DELTA = 30 * 60  # 30 minutes in seconds
 

@@ -3,7 +3,7 @@ from marshmallow import ValidationError
 from schema.client.client import ClientSchema
 from tests.base_test import BaseTest
 from models.client.client import ClientModel
-from tests.test_data import client
+from tests.test_data import client, expected_client
 
 
 class ClientSchemaTest(BaseTest):
@@ -18,10 +18,6 @@ class ClientSchemaTest(BaseTest):
 
             loaded_client = ClientModel.find_client_by_email('janedoe@email.com')
 
-            # Expected Client
-            expected_client = client.copy()
-            expected_client['id'] = 1
-            del expected_client['password']
             # Assertion
             self.assertEqual(client_schema.dump(loaded_client), expected_client)
 

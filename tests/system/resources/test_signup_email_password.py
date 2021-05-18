@@ -10,7 +10,7 @@ client_schema = ClientSchema()
 
 
 class ClientEmailSignUpTest(BaseTest):
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_create_client_user(self, mocked_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
@@ -23,7 +23,8 @@ class ClientEmailSignUpTest(BaseTest):
                     json=signup_details,
                     headers={'Content-Type': 'application/json'}
                 )
-                print(response.get_json())
+
+                mocked_send_verification_email.assert_called_once()
                 self.assertEqual(201, response.status_code)
 
                 self.assertIsNotNone(ClientModel.find_client_by_username('jane_d'))
@@ -33,7 +34,7 @@ class ClientEmailSignUpTest(BaseTest):
                 # response.get_json() or json.loads(response.data)
                 self.assertDictEqual(response.get_json(), expected_response)
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_client_unique_email(self, mocked_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
@@ -53,6 +54,9 @@ class ClientEmailSignUpTest(BaseTest):
                     json=second_signup_details,
                     headers={'Content-Type': 'application/json'}
                 )
+
+                mocked_send_verification_email.called_count = 2
+
                 self.assertEqual(400, response.status_code)
 
                 expected_response_data = {
@@ -60,7 +64,7 @@ class ClientEmailSignUpTest(BaseTest):
                 }
                 self.assertEqual(expected_response_data, response.get_json())
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_client_unique_username(self, mocked_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
@@ -80,12 +84,15 @@ class ClientEmailSignUpTest(BaseTest):
                     json=second_signup_details,
                     headers={'Content-Type': 'application/json'}
                 )
+
+                mocked_send_verification_email.called_count = 2
+
                 self.assertEqual(400, response.status_code)
 
                 expected_response_data = {'msg': 'A user with username \'{}\' already exists.'.format('jane_d')}
                 self.assertEqual(expected_response_data, response.get_json())
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_verify_email(self, mocked_send_verification_email):
         with self.app() as test_client:
             with self.app_context():

@@ -28,9 +28,10 @@ class ClientTest(TestCase):
 
         self.assertIs(verified_password, True)
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_verify_email(self, mock_send_verification_email):
         sample_client = ClientModel(**client.copy())
         mock_send_verification_email.return_value = Response()
         response = sample_client.send_verification_email()
+        mock_send_verification_email.assert_called_once()
         self.assertIsInstance(response, Response)

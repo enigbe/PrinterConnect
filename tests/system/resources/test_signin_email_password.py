@@ -7,7 +7,7 @@ from models.client.client import ClientModel
 
 
 class ClientEmailSignInTest(BaseTest):
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_valid_confirmed_signin_credentials(self, mock_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
@@ -21,6 +21,8 @@ class ClientEmailSignInTest(BaseTest):
                     json=sample_client_request,
                     headers={'Content-Type': 'application/json'}
                 )
+
+                mock_send_verification_email.assert_called_once()
 
                 expected = {
                     'msg': 'Client account created successfully. Check your email to activate your account'
@@ -41,12 +43,13 @@ class ClientEmailSignInTest(BaseTest):
                     headers={'Content-Type': 'application/json'}
                 )
                 signin_response_data = signin_response.get_json()
+                mock_send_verification_email.call_count = 2
 
                 self.assertEqual(signin_response.status_code, 200)
                 self.assertEqual(signin_response_data['msg'], 'Sign in successful.')
                 self.assertIn('jwt', signin_response_data.keys())
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_signin_client_exists(self, mock_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
@@ -59,6 +62,9 @@ class ClientEmailSignInTest(BaseTest):
                     json=sample_client_request,
                     headers={'Content-Type': 'application/json'}
                 )
+
+                mock_send_verification_email.assert_called_once()
+
                 expected = {
                     'msg': 'Client account created successfully. Check your email to activate your account'
                 }
@@ -70,7 +76,7 @@ class ClientEmailSignInTest(BaseTest):
                 created_client = ClientModel.find_client_by_email('janedoe@email.com')
                 self.assertIsInstance(created_client, ClientModel)
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_invalid_signin_credentials(self, mock_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
@@ -84,6 +90,8 @@ class ClientEmailSignInTest(BaseTest):
                     json=sample_client_request,
                     headers={'Content-Type': 'application/json'}
                 )
+                mock_send_verification_email.assert_called_once()
+
                 expected = {
                     'msg': 'Client account created successfully. Check your email to activate your account'
                 }
@@ -98,10 +106,12 @@ class ClientEmailSignInTest(BaseTest):
                     json=different_client,
                     headers={'Content-Type': 'application/json'}
                 )
+                mock_send_verification_email.call_count = 2
+
                 self.assertEqual(response.status_code, 401)
                 self.assertEqual(response.get_json(), {'msg': 'Invalid sign in credentials.'})
 
-    @patch('models.client.client.ClientModel.send_verification_email')
+    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_client_not_confirmed(self, mock_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
@@ -115,6 +125,8 @@ class ClientEmailSignInTest(BaseTest):
                     json=sample_client_request,
                     headers={'Content-Type': 'application/json'}
                 )
+                mock_send_verification_email.assert_called_once()
+
                 expected = {
                     'msg': 'Client account created successfully. Check your email to activate your account'
                 }
@@ -127,6 +139,9 @@ class ClientEmailSignInTest(BaseTest):
                     json=client_signin.copy(),
                     headers={'Content-Type': 'application/json'}
                 )
+
+                mock_send_verification_email.call_count = 2
+
                 signin_response_data = signin_response.get_json()
 
                 self.assertEqual(signin_response.status_code, 401)
