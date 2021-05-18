@@ -28,6 +28,14 @@
   "set_password_client_not_found": "Client not found.",
   "set_password_updated_successfully": "Password updated successfully.",
 
-  "github_authorization_rejected": "Verified github email is either private or not selected as public email. Signin with Github rejected."
+  "github_authorization_rejected": "Verified github email is either private or not selected as public email. Signin with Github rejected.",
+
+  "twitter_authorization_rejected": "Authorization rejected. Twitter email is null or unverified.",
+  "twitter_authorized_response_error" : "Error in ",
+
+  "google_redirect_url_error": "Your request to sign in with google is denied. Authorization failed.",
+  "google_verification_failed": "Verification failed. User email is missing or unverified.",
+
+  "facebook_authorization_rejected": "Authorization rejected. Facebook email is empty."
 
 }

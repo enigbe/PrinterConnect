@@ -1,4 +1,4 @@
-from ma import ma
+from marsh_mallow import ma
 from models.client.confirmation import ConfirmationModel
 
 

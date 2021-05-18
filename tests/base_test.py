@@ -8,7 +8,7 @@ each time and clearing out (tear down) of these databases
 import os
 from unittest import TestCase
 from app import app
-from db import db
+from data_base import db
 from dotenv import load_dotenv
 
 
@@ -16,6 +16,7 @@ class BaseTest(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
         # Create new database
+        load_dotenv('.env')
 
         app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'
         app.config['SECRET_KEY'] = os.urandom(16)
@@ -24,7 +25,16 @@ class BaseTest(TestCase):
             'consumer_key': os.getenv('GITHUB_CLIENT_ID'),
             'consumer_secret': os.getenv('GITHUB_CLIENT_SECRET'),
         }
-        load_dotenv('.env')
+        app.config['TWITTER'] = {
+            'consumer_key': os.getenv('TWITTER_API_KEY'),
+            'consumer_secret': os.getenv('TWITTER_SECRET_KEY'),
+            'signature_method': 'HMAC-SHA1'
+        }
+        app.config['GOOGLE'] = {
+            'consumer_key': os.getenv('GOOGLE_CLIENT_ID'),
+            'consumer_secret': os.getenv('GOOGLE_CLIENT_SECRET'),
+        }
+
         with app.app_context():  # Creates application context and installs app in it
             db.init_app(app)
 

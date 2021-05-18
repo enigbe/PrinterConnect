@@ -1,7 +1,7 @@
 from marshmallow import fields, validate, pre_dump
 
 from models.client.client import ClientModel
-from ma import ma
+from marsh_mallow import ma
 
 
 class ClientSchema(ma.SQLAlchemyAutoSchema):
