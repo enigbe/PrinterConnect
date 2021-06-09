@@ -3,9 +3,9 @@ from flask import url_for, g
 from flask_jwt_extended import create_access_token, create_refresh_token
 
 from models.client.client import ClientModel
-from models.client.confirmation import ConfirmationModel
 from o_auth import google
 from libs.strings import gettext
+from libs.client_helper import save_and_confirm_client
 
 
 class GoogleSignIn(Resource):
@@ -45,17 +45,12 @@ class GoogleAuth(Resource):
                     last_name=google_user.data['family_name'],
                     username=google_user.data['given_name']
                 )
-                client.save_client_to_db()
-
-                confirmation = ConfirmationModel(client.id)
-                confirmation.confirmed = True
-                confirmation.save_to_db()
-
+                save_and_confirm_client(client)
             except Exception as e:
                 client.delete_client_from_db()
                 return {'msg': str(e)}, 400
 
-        access_token = create_access_token(identity=client.email, fresh=True)
-        refresh_token = create_refresh_token(identity=client.email)
+        access_token = create_access_token(identity=client.id, fresh=True)
+        refresh_token = create_refresh_token(identity=client.id)
 
         return {'access_token': access_token, 'refresh_token': refresh_token}, 200

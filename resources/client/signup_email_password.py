@@ -1,4 +1,6 @@
 # import traceback
+import traceback
+
 from flask import request
 from flask_restful import Resource
 from marshmallow import ValidationError
@@ -60,8 +62,8 @@ class ClientEmailSignUp(Resource):
                 return {'msg': gettext('signup_account_creation_successful')}, 201
             except MailgunException as err:
                 client.delete_client_from_db()  # Roll back all changes
-                return {'msg': err}, 500
+                return {'msg': str(err)}, 500
             except Exception as err:
-                # traceback.print_exc()
+                traceback.print_exc()
                 client.delete_client_from_db()
                 return {'msg': gettext('signup_account_creation_failed'), 'exception': str(err)}, 500

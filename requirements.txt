@@ -9,3 +9,5 @@ requests
 python-dotenv
 Flask-OAuthlib
 oauth2
+flask-uploads
+flask-migrate

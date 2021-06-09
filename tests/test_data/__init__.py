@@ -7,14 +7,33 @@ client = {
     'password': '12345678'
 }
 
-expected_client = {
+updated_client = {
     'email': 'janedoe@email.com',
     'username': 'jane_d',
     'first_name': 'jane',
     'last_name': 'doe',
-    'oauth_token': 'empty',
-    'oauth_token_secret': 'empty',
-    'id': 1
+    'bio': 'Bio updated'
+}
+
+client_profile = {
+    'email': 'janedoe@email.com',
+    'username': 'jane_d',
+    'first_name': 'jane',
+    'last_name': 'doe',
+    'bio': None,
+    'avatar_url': None
+}
+
+exp_client = {
+    'first_name': 'jane',
+    'username': 'jane_d',
+    'last_name': 'doe',
+    'avatar_filename': None,
+    'avatar_url': None,
+    'bio': None,
+    'id': 1,
+    'avatar_uploaded': False,
+    'email': 'janedoe@email.com'
 }
 
 
@@ -60,4 +79,15 @@ facebook_user_data = {
     'short_name': 'jane_d',
     'first_name': 'jane',
     'last_name': 'doe',
+}
+
+blocked_token = {'id': 1, 'jti': '1eb0f7f7-9c18-45c6-b297-15873258b328', 'client_id': 1}
+searched_client = {
+    'username': 'jane_d',
+    'bio': None,
+    'avatar_url':
+    'http://localhost:5001/static/images/assets/default-avatar.png',
+    'first_name': 'jane',
+    'last_name': 'doe',
+    'email': 'janedoe@email.com'
 }

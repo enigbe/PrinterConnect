@@ -6,6 +6,7 @@ from data_base import db
 from libs.mailgun import Mailgun
 from libs.strings import gettext
 from models.client.confirmation import ConfirmationModel
+from models.client.token_blocklist import TokenBlockListModel
 
 
 class ClientModel(db.Model):
@@ -17,11 +18,20 @@ class ClientModel(db.Model):
     first_name = db.Column(db.String(120), nullable=True)
     last_name = db.Column(db.String(120), nullable=True)
     password = db.Column(db.String(120), nullable=True)
-    oauth_token = db.Column(db.String(120), nullable=False, default='empty')
-    oauth_token_secret = db.Column(db.String(120), nullable=False, default='empty')
+    oauth_token = db.Column(db.String(120), nullable=True, default=None)
+    oauth_token_secret = db.Column(db.String(120), nullable=True, default=None)
+    bio = db.Column(db.String(250), nullable=True, default=None)
+    avatar_filename = db.Column(db.String(100), default=None)
+    avatar_uploaded = db.Column(db.Boolean, default=False, nullable=True)
 
     confirmation = db.relationship(
         'ConfirmationModel',
+        lazy='dynamic',
+        cascade='all, delete-orphan',
+        back_populates='client'
+    )
+    token_blocklist = db.relationship(
+        'TokenBlockListModel',
         lazy='dynamic',
         cascade='all, delete-orphan',
         back_populates='client'
@@ -33,6 +43,10 @@ class ClientModel(db.Model):
     @property
     def most_recent_confirmation(self) -> "ConfirmationModel":
         return self.confirmation.order_by(db.desc(ConfirmationModel.expire_at)).first()
+
+    @classmethod
+    def find_client_by_id(cls, _id: int) -> "ClientModel":
+        return cls.query.filter_by(id=_id).first()
 
     @classmethod
     def find_client_by_email(cls, email: str) -> "ClientModel":
@@ -61,10 +75,22 @@ class ClientModel(db.Model):
 
         return Mailgun.send_email([self.email], subject, text)
 
+    def send_update_email_notification(self, new_email) -> Response:
+        client_name = self.first_name
+        subject = gettext('client_profile_email_update_subject')
+        text_content = gettext('client_profile_email_update_text').format(client_name, new_email)
+        return Mailgun.send_email([self.email], subject, text_content)
+
     def save_client_to_db(self) -> None:
         db.session.add(self)
+        db.session.commit()
+
+    def update_client_in_db(self) -> None:
         db.session.commit()
 
     def delete_client_from_db(self) -> None:
         db.session.delete(self)
         db.session.commit()
+
+    def rollback(self):
+        db.session.rollback()

@@ -47,7 +47,7 @@ class ClientEmailSignInTest(BaseTest):
 
                 self.assertEqual(signin_response.status_code, 200)
                 self.assertEqual(signin_response_data['msg'], 'Sign in successful.')
-                self.assertIn('jwt', signin_response_data.keys())
+                self.assertIn('access_token', signin_response_data.keys())
 
     @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
     def test_signin_client_exists(self, mock_send_verification_email):
@@ -106,8 +106,8 @@ class ClientEmailSignInTest(BaseTest):
                     json=different_client,
                     headers={'Content-Type': 'application/json'}
                 )
-                mock_send_verification_email.call_count = 2
 
+                mock_send_verification_email.call_count = 2
                 self.assertEqual(response.status_code, 401)
                 self.assertEqual(response.get_json(), {'msg': 'Invalid sign in credentials.'})
 

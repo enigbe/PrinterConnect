@@ -6,6 +6,7 @@ from o_auth import facebook
 from libs.strings import gettext
 from models.client.client import ClientModel
 from models.client.confirmation import ConfirmationModel
+from libs.client_helper import save_and_confirm_client
 
 
 class FacebookSignIn(Resource):
@@ -43,16 +44,13 @@ class FacebookAuth(Resource):
                     oauth_token=g.access_token,
                     password=None
                 )
-                client.save_client_to_db()
-                confirmation = ConfirmationModel(client.id)
-                confirmation.confirmed = True
-                confirmation.save_to_db()
+                save_and_confirm_client(client)
+
             except Exception as e:
                 client.delete_client_from_db()
-
                 return {'msg': str(e)}, 400
 
-        access_token = create_access_token(identity=client.email, fresh=True)
-        refresh_token = create_refresh_token(identity=client.email)
+        access_token = create_access_token(identity=client.id, fresh=True)
+        refresh_token = create_refresh_token(identity=client.id)
 
         return {"access_token": access_token, "refresh_token": refresh_token}, 200

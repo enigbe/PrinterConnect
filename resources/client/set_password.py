@@ -25,6 +25,10 @@ class SetPassword(Resource):
         if not client:
             return {'msg': gettext('set_password_client_not_found')}, 401
 
+        # 1. Check if new password matches old password
+        if client.verify_password(client_data['password']):
+            return {'msg': gettext('set_password_new_cannot_be_old')}
+
         client.hash_password(client_data['password'])
         client.save_client_to_db()
 

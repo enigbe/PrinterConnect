@@ -6,6 +6,7 @@ from o_auth import github
 from models.client.client import ClientModel
 from models.client.confirmation import ConfirmationModel
 from libs.strings import gettext, split_name
+from libs.client_helper import save_and_confirm_client
 
 
 class GithubSignIn(Resource):
@@ -46,20 +47,13 @@ class GithubAuth(Resource):
                 client = ClientModel(email=github_email, username=github_username, first_name=fullname[0],
                                      last_name=fullname[1], password=None, oauth_token=g.access_token
                                      )
-                # 2. save client to db
-                client.save_client_to_db()
-                # 4. create confirmation with client's id
-                confirmation = ConfirmationModel(client.id)
-                # 5. make confirmation.confirmed true
-                confirmation.confirmed = True
-                # 6. save confirmation to db
-                confirmation.save_to_db()
+                save_and_confirm_client(client)
             except Exception as e:
                 client.delete_client_from_db()
 
                 return {'msg': str(e)}, 400
 
-        access_token = create_access_token(identity=client.email, fresh=True)
-        refresh_token = create_refresh_token(identity=client.email)
+        access_token = create_access_token(identity=client.id, fresh=True)
+        refresh_token = create_refresh_token(identity=client.id)
 
         return {"access_token": access_token, "refresh_token": refresh_token}, 200

@@ -27,16 +27,13 @@ class ClientEmailSignIn(Resource):
             confirmation = client.most_recent_confirmation
             if confirmation and confirmation.confirmed:
                 # 4. If 3 above is true, generate an access and refresh token to access protected endpoints
-                access_token = create_access_token(identity=data['email'], fresh=True)
-                request_token = create_refresh_token(identity=data['email'])
+                access_token = create_access_token(identity=client.id, fresh=True)
+                refresh_token = create_refresh_token(identity=client.id)
 
-                jwt_tokens = {
-                    'access_token': access_token,
-                    'request_token': request_token
-                }
                 return {
                     'msg': gettext('signin_successful'),
-                    'jwt': jwt_tokens
+                    'access_token': access_token,
+                    'refresh_token': refresh_token
                 }, 200
             return {'msg': gettext('signin_account_not_confirmed')}, 401
         # 5. Return success message and tokens
