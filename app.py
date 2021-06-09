@@ -18,9 +18,9 @@ from resources.homepage.home import Home
 from resources.client.set_password import SetPassword
 from resources.client.avatar import AvatarUpload, Avatar
 from resources.client.sign_out import SignOut
-from resources.client.client_profile import ClientProfile
+# from resources.client.client_profile import ClientProfile
 from resources.client.token_refresh import TokenRefresh, BlockedTokens
-from resources.client.client_search import ClientSearch
+# from resources.client.client_search import ClientSearch
 from libs.image_helper import IMAGE_SET
 from dotenv import load_dotenv
 
@@ -67,9 +67,9 @@ api.add_resource(AvatarUpload, '/client/avatar/upload')
 api.add_resource(Avatar, '/client/avatar')
 api.add_resource(SignOut, '/client/signout')
 api.add_resource(BlockedTokens, '/token/blocked/<string:email>')
-api.add_resource(ClientProfile, '/client/profile')
+# api.add_resource(ClientProfile, '/client/profile')
 api.add_resource(TokenRefresh, '/token/refresh')
-api.add_resource(ClientSearch, '/client/profile/search/<string:username>')
+# api.add_resource(ClientSearch, '/client/profile/search/<string:username>')
 api.add_resource(Home, '/')
 api.add_resource(SetPassword, '/client/password')
 
