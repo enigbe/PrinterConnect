@@ -9,18 +9,11 @@ import os
 from unittest import TestCase
 from app import app
 from data_base import db
-from dotenv import load_dotenv
 
 
 class BaseTest(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        # Create new database
-        load_dotenv('.env')
-
-        app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///'
-        app.config['SECRET_KEY'] = os.urandom(16)
-        app.config['JWT_SECRET_KEY'] = os.urandom(16)
         app.config['GITHUB'] = {
             'consumer_key': os.getenv('GITHUB_CLIENT_ID'),
             'consumer_secret': os.getenv('GITHUB_CLIENT_SECRET'),
@@ -36,10 +29,12 @@ class BaseTest(TestCase):
         }
 
         with app.app_context():  # Creates application context and installs app in it
+            # Create new database
             db.init_app(app)
 
     def setUp(self) -> None:
         with app.app_context():  # Creates application context and installs app in it
+            # Create new database tables
             db.create_all()
 
         # Get a test client

@@ -5,6 +5,7 @@ from tests.base_test import BaseTest
 from models.client.client import ClientModel
 from models.client.confirmation import ConfirmationModel
 from tests.test_data import client
+from libs.client_helper import save_and_confirm_client
 
 
 class SetPasswordTest(BaseTest):
@@ -27,19 +28,15 @@ class SetPasswordTest(BaseTest):
             with self.app_context():
 
                 new_client = ClientModel(**client.copy())
-                new_client.hash_password()
-                new_client.save_client_to_db()
-
-                confirmation = ConfirmationModel(new_client.id)
-                confirmation.confirmed = True
-                confirmation.save_to_db()
+                new_client.hash_password(password=client['password'])
+                save_and_confirm_client(new_client)
 
                 signin_request_data = {'email': 'janedoe@email.com', 'password': '12345678'}
                 signin_response = test_client.post('/client/signin/email',
                                                    json=signin_request_data,
                                                    headers={'Content-Type': 'application/json'}
                                                    )
-                authorization_token = signin_response.json['jwt']['access_token']
+                authorization_token = signin_response.json['access_token']
                 header = {'Authorization': 'Bearer {}'.format(authorization_token)}
 
                 set_password_request_data = {'email': 'janedoe@email.com', 'password': 'pyotorovich'}

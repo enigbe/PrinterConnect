@@ -2,6 +2,8 @@ from marshmallow import fields, validate, pre_dump
 
 from models.client.client import ClientModel
 from marsh_mallow import ma
+from libs import image_helper
+from libs.strings import gettext
 
 
 class ClientSchema(ma.SQLAlchemyAutoSchema):
@@ -28,8 +30,33 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
     class Meta:
         model = ClientModel
         # load_instance = True
-        load_only = ('password',)  # do not include when dumping data
-        dump_only = ('id', 'confirmation', 'oauth_token', 'oauth_token_secret',)  # do not include when loading data
+        load_only = ('password', 'oauth_token', 'oauth_token_secret')  # do not include when dumping data
+        dump_only = (
+            'id',
+            'confirmation',
+            'oauth_token',
+            'oauth_token_secret',
+            # 'bio',
+            'avatar_filename',
+        )  # do not include when loading data
+
+    avatar_url = fields.Method(serialize='dump_avatar_url')
+
+    @staticmethod
+    def dump_avatar_url(client: ClientModel):
+        # Default avatar config
+        avatar_filename = 'default-avatar'
+        folder = 'assets'
+        default_avatar_path = image_helper.find_image_any_format(avatar_filename, folder)
+        # Uploaded avatar config
+        if client.avatar_filename and client.avatar_uploaded is True:
+            folder = 'avatars'
+            avatar_path = image_helper.find_image_any_format(client.avatar_filename, folder)
+            if avatar_path is None:
+                return gettext('base_url') + default_avatar_path
+            return gettext('base_url') + avatar_path
+
+        return gettext('base_url') + default_avatar_path
 
     @pre_dump
     def _pre_dump(self, client: ClientModel, **kwargs):

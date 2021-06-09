@@ -17,7 +17,7 @@ class ConfirmationTest(BaseTest):
                 sample_client = ClientModel(**client.copy())
                 sample_client.save_client_to_db()
 
-                confirmation = ConfirmationModel(1)
+                confirmation = ConfirmationModel(sample_client.id)
                 confirmation.save_to_db()
                 confirmation_id = sample_client.most_recent_confirmation.id
                 url = '/client/confirmation/' + confirmation_id
@@ -53,7 +53,7 @@ class ConfirmationTest(BaseTest):
                 sample_client = ClientModel(**client.copy())
                 sample_client.save_client_to_db()
 
-                confirmation = ConfirmationModel(1)
+                confirmation = ConfirmationModel(sample_client.id)
                 confirmation.save_to_db()
 
                 response = test_client.get('/client/resend_confirmation/janedoe@email.com')
