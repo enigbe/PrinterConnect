@@ -82,6 +82,7 @@ facebook_user_data = {
 }
 
 blocked_token = {'id': 1, 'jti': '1eb0f7f7-9c18-45c6-b297-15873258b328', 'client_id': 1}
+
 searched_client = {
     'username': 'jane_d',
     'bio': None,
