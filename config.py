@@ -1,5 +1,5 @@
 import os
 
 DEBUG = False
-SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL', 'sqlite:///printerconnect_prod.db')
+SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 TWITTER_SIGNATURE_METHOD = os.environ.get('TWITTER_SIGNATURE_METHOD')

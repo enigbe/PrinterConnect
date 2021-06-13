@@ -7,6 +7,7 @@ from libs.mailgun import Mailgun
 from libs.strings import gettext
 from models.client.confirmation import ConfirmationModel
 from models.client.token_blocklist import TokenBlockListModel
+from models.client.cad_model import CADModel
 
 
 class ClientModel(db.Model):
@@ -32,6 +33,13 @@ class ClientModel(db.Model):
     )
     token_blocklist = db.relationship(
         'TokenBlockListModel',
+        lazy='dynamic',
+        cascade='all, delete-orphan',
+        back_populates='client'
+    )
+
+    cad_model = db.relationship(
+        'CADModel',
         lazy='dynamic',
         cascade='all, delete-orphan',
         back_populates='client'

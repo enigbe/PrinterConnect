@@ -16,7 +16,7 @@ from resources.client.signin_google import GoogleSignIn, GoogleAuth
 from resources.client.signin_facebook import FacebookSignIn, FacebookAuth
 from resources.homepage.home import Home
 from resources.client.set_password import SetPassword
-from resources.client.avatar import AvatarUpload, Avatar
+from resources.client.avatar import Avatar
 from resources.client.sign_out import SignOut
 from resources.client.client_profile import ClientProfile
 from resources.client.token_refresh import TokenRefresh, BlockedTokens
@@ -63,7 +63,6 @@ api.add_resource(GoogleSignIn, '/client/signin/google')
 api.add_resource(GoogleAuth, '/client/google/auth', endpoint='google.auth')
 api.add_resource(FacebookSignIn, '/client/signin/facebook')
 api.add_resource(FacebookAuth, '/client/facebook/auth', endpoint='facebook.auth')
-api.add_resource(AvatarUpload, '/client/avatar/upload')
 api.add_resource(Avatar, '/client/avatar')
 api.add_resource(SignOut, '/client/signout')
 api.add_resource(BlockedTokens, '/token/blocked/<string:email>')
