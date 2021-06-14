@@ -15,7 +15,7 @@ avatar_schema = AvatarSchema()
 client_schema = ClientSchema(only=('avatar_url',))
 
 
-class AvatarUpload(Resource):
+class Avatar(Resource):
     @classmethod
     @jwt_required(fresh=True)
     def put(cls):
@@ -62,8 +62,6 @@ class AvatarUpload(Resource):
             extension = image_helper.get_extension(data['image'])
             return {'msg': gettext('avatar_extension_illegal').format(extension)}, 400
 
-
-class Avatar(Resource):
     @classmethod
     @jwt_required()
     def get(cls):
@@ -94,6 +92,7 @@ class Avatar(Resource):
                 os.remove(avatar)
                 client.avatar_uploaded = False
                 client.avatar_filename = None
+                client.update_client_in_db()
                 return {'msg': gettext('avatar_deleted').format(filename)}, 200
             except FileNotFoundError:
                 return {'msg': gettext('avatar_not_found').format(filename)}, 404
