@@ -1,3 +1,4 @@
+from typing import List
 from flask import request, url_for
 from requests import Response
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -19,8 +20,8 @@ class ClientModel(db.Model):
     first_name = db.Column(db.String(120), nullable=True)
     last_name = db.Column(db.String(120), nullable=True)
     password = db.Column(db.String(120), nullable=True)
-    oauth_token = db.Column(db.String(120), nullable=True, default=None)
-    oauth_token_secret = db.Column(db.String(120), nullable=True, default=None)
+    oauth_token = db.Column(db.String(200), nullable=True, default=None)
+    oauth_token_secret = db.Column(db.String(200), nullable=True, default=None)
     bio = db.Column(db.String(250), nullable=True, default=None)
     avatar_filename = db.Column(db.String(100), default=None)
     avatar_uploaded = db.Column(db.Boolean, default=False, nullable=True)
@@ -51,6 +52,10 @@ class ClientModel(db.Model):
     @property
     def most_recent_confirmation(self) -> "ConfirmationModel":
         return self.confirmation.order_by(db.desc(ConfirmationModel.expire_at)).first()
+
+    @property
+    def cad_models_list(self) -> List["CADModel"]:
+        return self.cad_model.order_by(db.desc(CADModel.cad_model_creation_time)).all()
 
     @classmethod
     def find_client_by_id(cls, _id: int) -> "ClientModel":
@@ -93,12 +98,14 @@ class ClientModel(db.Model):
         db.session.add(self)
         db.session.commit()
 
-    def update_client_in_db(self) -> None:
+    @staticmethod
+    def update_client_in_db() -> None:
         db.session.commit()
 
     def delete_client_from_db(self) -> None:
         db.session.delete(self)
         db.session.commit()
 
-    def rollback(self):
+    @staticmethod
+    def rollback():
         db.session.rollback()

@@ -3,11 +3,9 @@
   "mailgun_missing_domain": "Missing Mailgun Domain. Domain failed to load.",
   "mailgun_missing_email": "Missing Mailgun email.",
   "mailgun_error_sending_email": "Error in sending verification email. Client registration failed.",
-
   "clientmodel_verification_email_subject": "Account Verification",
   "clientmodel_verification_email_text": "Hello {},\n\nWelcome to PrinterConnect.\n\nTo verify your identity, click on this link: {}\n\nIf this email was sent to you in error, please disregard.\n\nWarm regards.",
   "clientmodel_empty_password": "Password field is empty.",
-
   "confirmation_not_found": "Confirmation reference for this account not found.",
   "confirmation_expired": "Confirmation link has expired.",
   "confirmation_successful": "{} activated successfully. You can now sign in.",
@@ -15,30 +13,22 @@
   "confirmation_client_not_found": "Client not found.",
   "confirmation_email_resend_failed": "Failed to resend verification email.",
   "confirmation_email_resent_successful": "Verification email resent successfully.",
-
   "signup_email_already_exists": "A user with email '{}' already exists.",
   "signup_username_already_exists": "A user with username '{}' already exists.",
   "signup_account_creation_successful": "Client account created successfully. Check your email to activate your account",
   "signup_account_creation_failed": "Account creation failed. Please try again.",
-
   "signin_invalid_credentials": "Invalid sign in credentials.",
   "signin_successful": "Sign in successful.",
   "signin_account_not_confirmed": "Your account has not been confirmed. Please check your email for the confirmation link or request a new confirmation link.",
-
   "set_password_client_not_found": "Client not found.",
   "set_password_updated_successfully": "Password updated successfully.",
   "set_password_new_cannot_be_old": "New password cannot be old password.",
-
   "github_authorization_rejected": "Verified github email is either private or not selected as public email. Signin with Github rejected.",
-
   "twitter_authorization_rejected": "Authorization rejected. Twitter email is null or unverified.",
-  "twitter_authorized_response_error" : "Error in ",
-
+  "twitter_authorized_response_error": "Error in ",
   "google_redirect_url_error": "Your request to sign in with google is denied. Authorization failed.",
   "google_verification_failed": "Verification failed. User email is missing or unverified.",
-
   "facebook_authorization_rejected": "Authorization rejected. Facebook email is empty.",
-
   "avatar_uploaded": "Avatar '{}' uploaded.",
   "avatar_extension_illegal": "Extension '{}' is not allowed.",
   "avatar_illegal_file_name": "Illegal filename '{}' requested.",
@@ -46,7 +36,6 @@
   "avatar_deleted": "Avatar '{}' deleted successfully.",
   "avatar_delete_failed": "Internal server error. Avatar deletion failed.",
   "extension_not_allowed": "Image extension type not allowed.",
-
   "client_profile_client_does_not_exist": "Client does not exist.",
   "client_profile_client_deleted": "Client '{}' successfully deleted.",
   "client_profile_patch_permission_denied": "Profile update permission denied. Unauthorized to update '{}' profile.",
@@ -56,13 +45,20 @@
   "client_profile_deletion_unauthorized": "Unauthorized to delete",
   "client_profile_email_update_subject": "PrinterConnect: Update to client email",
   "client_profile_email_update_text": "Hello {}, \nYour PrinterConnect email was successfully updated to {}.",
-
   "update_email_already_exist": "Client with given email already exist.",
   "update_email_not_sent": "Empty email field.",
-
   "base_url": "http://localhost:5001/",
-
   "token_refresh_token_blocklist_empty": "Client token block list is empty.",
-
-  "sign_out_token_addition_failed": "Failed to add token to block list"
+  "sign_out_token_addition_failed": "Failed to add token to block list",
+  "cad_model_saved_successfully": "CAD model saved successfully",
+  "cad_model_file_upload_failed": "Failed to upload CAD model files",
+  "cad_model_files_already_exist": "CAD model with name '{}' already exists",
+  "cad_model_no_files_attached": "No image and/or CAD files attached.",
+  "cad_model_exceeded_upload_limit": "Exceeded upload limit of 5 CAD files and images each. Delete file(s) to upload.",
+  "cad_model_empty_presigned_url": "Empty presigned URL and fields.",
+  "cad_model_does_not_exist": "CAD model does not exist",
+  "cad_model_not_visible": "CAD model found but not visible",
+  "cad_model_delete_successful": "Successfully deleted CAD model with name '{}'",
+  "cad_model_update_info_empty": "No modification made to CAD model",
+  "cad_model_name_cannot_be_empty": "CAD model name field cannot be empty"
 }

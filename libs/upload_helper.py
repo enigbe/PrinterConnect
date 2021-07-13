@@ -5,27 +5,38 @@ from werkzeug.datastructures import FileStorage
 
 from flask_uploads import UploadSet, IMAGES
 
+# Basic neutral CAD files
+CAD_MODELS = tuple('stp step stl igs iges x_t x_b vrml x3d dae dxf ipt'.split())
 IMAGE_SET = UploadSet('images', IMAGES)
+CAD_MODEL_SET = UploadSet('models', CAD_MODELS)
 
 
-def save_image(image: FileStorage, folder: str = None, name: str = None) -> str:
-    """Takes a FileStorage object and saves it to a folder"""
-    return IMAGE_SET.save(image, folder, name)
+def save_upload(uploaded_set: UploadSet, file: FileStorage, folder: str = None, name: str = None) -> str:
+    """Takes an uploaded set, a FileStorage object and saves it to a folder"""
+    return uploaded_set.save(file, folder, name)
 
 
-def get_path(filename: str, folder: str) -> str:
-    """Takes an image name and folder. Returns the full path"""
-    return IMAGE_SET.path(filename, folder)
+def get_path(uploaded_set: UploadSet, filename: str, folder: str) -> str:
+    """Takes an uploaded set, file name and folder. Returns the full path"""
+    return uploaded_set.path(filename, folder)
 
 
-def find_image_any_format(filename: str, folder: str) -> Union[str, None]:
+def find_upload_any_format(uploaded_set: UploadSet, filename: str, folder: str) -> Union[str, None]:
     """Takes a filename and folder, and returns an image in any of the accepted formats"""
-    for _format in IMAGES:
-        image = f"{filename}.{_format}"
-        image_path = IMAGE_SET.path(filename=image, folder=folder)
-        if os.path.isfile(image_path):
-            return image_path
-    return None
+
+    def __uploaded_file_extension(extension_tuple):
+        for _format in extension_tuple:
+            file_name = f"{filename}.{_format}"
+            file_path = IMAGE_SET.path(filename=file_name, folder=folder)
+            if os.path.isfile(file_path):
+                return file_path
+        return None
+
+    if uploaded_set == IMAGE_SET:
+        return __uploaded_file_extension(IMAGES)
+
+    if uploaded_set == CAD_MODEL_SET:
+        return __uploaded_file_extension(CAD_MODELS)
 
 
 def _retrieve_filename(file: Union[str, FileStorage]) -> str:

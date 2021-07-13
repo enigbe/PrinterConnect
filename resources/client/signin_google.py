@@ -3,6 +3,7 @@ from flask import url_for, g
 from flask_jwt_extended import create_access_token, create_refresh_token
 
 from models.client.client import ClientModel
+from schema.client.client import ClientSchema
 from o_auth import google
 from libs.strings import gettext
 from libs.client_helper import save_and_confirm_client
@@ -38,16 +39,20 @@ class GoogleAuth(Resource):
 
         if not client:
             try:
-                client = ClientModel(
-                    email=user_email,
-                    oauth_token=g.access_token,
-                    first_name=google_user.data['given_name'],
-                    last_name=google_user.data['family_name'],
-                    username=google_user.data['given_name']
+                client_schema = ClientSchema(partial=True)
+                client_data = client_schema.load(
+                    {
+                        'email': user_email,
+                        'oauth_token': g.access_token,
+                        'first_name': google_user.data['given_name'],
+                        'last_name': google_user.data['family_name'],
+                        'username': google_user.data['given_name']
+                    }
                 )
+                client = ClientModel(**client_data)
                 save_and_confirm_client(client)
             except Exception as e:
-                client.delete_client_from_db()
+                # client.rollback()
                 return {'msg': str(e)}, 400
 
         access_token = create_access_token(identity=client.id, fresh=True)

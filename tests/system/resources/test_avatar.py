@@ -7,7 +7,7 @@ from werkzeug.datastructures import FileStorage
 from tests.base_test import BaseTest
 from tests.test_data import client
 from models.client.client import ClientModel
-from resources.client.avatar import image_helper
+from resources.client.avatar import upload_helper
 
 
 class AvatarTest(BaseTest):
@@ -29,8 +29,8 @@ class AvatarTest(BaseTest):
                 self.assertEqual(resp.json, 'default-avatar.png')
 
     @patch('resources.client.avatar.send_file', autospec=True)
-    @patch.object(image_helper, 'find_image_any_format', autospec=True)
-    @patch.object(image_helper, 'save_image', autospec=True)
+    @patch.object(upload_helper, 'find_image_any_format', autospec=True)
+    @patch.object(upload_helper, 'save_image', autospec=True)
     @patch.object(builtins, 'open', autospec=True)
     def test_get_uploaded_avatar_with_jwt(self, mock_open, mock_save_image, mock_find_image_any_format, mock_send_file):
         with self.app() as test_client:
@@ -67,7 +67,7 @@ class AvatarTest(BaseTest):
                 mock_send_file.assert_called_once()
                 mock_find_image_any_format.call_count = 2
 
-    @patch.object(image_helper, 'save_image', autospec=True)
+    @patch.object(upload_helper, 'save_image', autospec=True)
     @patch.object(builtins, 'open', autospec=True)
     def test_upload_avatar(self, mock_open, mock_save_image):
         with self.app() as test_client:
@@ -94,8 +94,8 @@ class AvatarTest(BaseTest):
                 self.assertEqual(resp.json, {'msg': "Avatar 'client_1.jpg' uploaded."})
 
     @patch.object(os, 'remove', autospec=True)
-    @patch.object(image_helper, 'find_image_any_format', autospec=True)
-    @patch.object(image_helper, 'save_image', autospec=True)
+    @patch.object(upload_helper, 'find_image_any_format', autospec=True)
+    @patch.object(upload_helper, 'save_image', autospec=True)
     @patch.object(builtins, 'open', autospec=True)
     def test_delete_avatar(self, mock_open, mock_save_image, mock_find_image_any_format, mock_remove):
         with self.app() as test_client:

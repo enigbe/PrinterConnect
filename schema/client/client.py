@@ -2,7 +2,8 @@ from marshmallow import fields, validate, pre_dump
 
 from models.client.client import ClientModel
 from marsh_mallow import ma
-from libs import image_helper
+from libs import upload_helper
+from libs.upload_helper import IMAGE_SET
 from libs.strings import gettext
 
 
@@ -34,9 +35,10 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
         dump_only = (
             'id',
             'confirmation',
-            'oauth_token',
+            # 'oauth_token',
             'oauth_token_secret',
-            # 'bio',
+            'cad_model',
+            'token_blocklist'
             'avatar_filename',
         )  # do not include when loading data
 
@@ -47,11 +49,11 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
         # Default avatar config
         avatar_filename = 'default-avatar'
         folder = 'assets'
-        default_avatar_path = image_helper.find_image_any_format(avatar_filename, folder)
+        default_avatar_path = upload_helper.find_upload_any_format(IMAGE_SET, avatar_filename, folder)
         # Uploaded avatar config
         if client.avatar_filename and client.avatar_uploaded is True:
             folder = 'avatars'
-            avatar_path = image_helper.find_image_any_format(client.avatar_filename, folder)
+            avatar_path = upload_helper.find_upload_any_format(IMAGE_SET, client.avatar_filename, folder)
             if avatar_path is None:
                 return gettext('base_url') + default_avatar_path
             return gettext('base_url') + avatar_path
