@@ -1,23 +1,19 @@
-from functools import partial
-from marshmallow import fields
 import requests
 
-from flask import request, session
+from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
-from werkzeug.utils import secure_filename
 
 from models.client.client import ClientModel
 from schema.client.cad_model import CADModelSchema, CADSpecificationSchema
 from models.client.cad_model import CADModel
 from libs.strings import gettext
-from libs.upload_helper import get_basename
+from libs.upload_helper import get_extension, CAD_MODELS
 from libs.aws_helper import (
     s3_client,
     bucket_name,
     create_presigned_url,
-    create_presigned_post_url,
-    post_with_presigned_url
+    create_presigned_post_url
 )
 
 cad_spec_keys = (
@@ -32,7 +28,7 @@ class CADModelResource(Resource):
     @classmethod
     @jwt_required(fresh=True)
     def post(cls):
-        """Pre-sign a POST url for file upload to S3"""
+        """Pre-sign a POST url for file upload to S3 and post"""
         specifications = CADSpecificationSchema(
             only=cad_spec_keys).load(request.form)
 
@@ -46,6 +42,9 @@ class CADModelResource(Resource):
 
         folder = f"client_{get_jwt_identity()}"
         cad_object_key = cad_fileobject['cad'].filename
+        if get_extension(cad_object_key)[1:] not in CAD_MODELS:
+            return {'msg': gettext('cad_model_invalid_extension')}, 400
+
         object_key = f"{folder}/{cad_object_key}"
         # Get a presigned post URL
         presigned_resp = create_presigned_post_url(
@@ -109,35 +108,71 @@ class CADModelResource(Resource):
     @classmethod
     @jwt_required(fresh=True)
     def patch(cls):
+        """Update existing CAD model given update parameters"""
         spec_schema = CADSpecificationSchema(only=cad_spec_keys, partial=True)
-        cad_schema = CADModelSchema(only=cad_file_keys)
+        cad_schema = CADModelSchema(only=cad_file_keys, partial=True)
         update_specs = spec_schema.load(request.form)
         update_cad = cad_schema.load(request.files)
-        cad_filename = update_cad['cad'].filename
+        count = 0
 
-        if update_cad is None and update_specs is None:
+        if update_cad == {} and update_specs == {}:
             return {'msg': gettext('cad_model_update_info_empty')}
 
-        if update_specs['cad_model_name'] == '' or cad_filename == '':
+        cad_filename = update_cad['cad'].filename if 'cad' in update_cad else ''
+        if update_specs['cad_model_name'] == '' and cad_filename == '':
             return {'msg': gettext('cad_model_name_cannot_be_empty')}
 
         client_folder = f'client_{get_jwt_identity()}'
         current_cad = CADModel.find_cad_model_by_name(
             update_specs['cad_model_name'])
 
-        if current_cad:
+        if current_cad is None:
+            return {'msg': gettext('cad_model_does_not_exist')}, 400
+
+        if 'cad' in update_cad:
             # 1. Delete object with cad_object_key
             delete_resp = s3_client.delete_object(
                 Bucket=bucket_name, Key=current_cad.cad_object_key)
             if delete_resp['ResponseMetadata']['HTTPStatusCode'] == 204:
-                # 2. Upload CAD model to bucket and update cad_model_key
+                # 2. Upload CAD model to bucket
                 object_key = f'{client_folder}/{cad_filename}'
                 ps_data = create_presigned_post_url(
                     s3_client, bucket_name, object_key)
                 url, fields = ps_data['url'], ps_data['fields']
-                cad = update_cad['cad'].read()
-                post_resp = requests.post(
-                    url, data=fields, files={'file': cad})
-                return post_resp.status_code
+                if get_extension(cad_filename)[1:] not in CAD_MODELS:
+                    return {'msg': gettext('cad_model_invalid_extension')}, 400
 
-        return {'msg': gettext('cad_model_does_not_exist')}, 400
+                cad = update_cad['cad'].read()  # CAD model file
+                requests.post(url, data=fields, files={'file': cad})
+                # 3. Update cad_model_key
+                current_cad.cad_object_key = object_key
+                count += 1
+
+        if 'cad_model_length' in update_specs:
+            current_cad.cad_model_length = update_specs['cad_model_length']
+            count += 1
+
+        if 'cad_model_height' in update_specs:
+            current_cad.cad_model_height = update_specs['cad_model_height']
+            count += 1
+
+        if 'cad_model_width' in update_specs:
+            current_cad.cad_model_width = update_specs['cad_model_width']
+            count += 1
+
+        if 'cad_model_material' in update_specs:
+            current_cad.cad_model_material = update_specs['cad_model_material']
+            count += 1
+
+        if 'cad_model_visibility' in update_specs:
+            current_cad.cad_model_visibility = update_specs['cad_model_visibility']
+            count += 1
+
+        if 'cad_model_mesh_percent' in update_specs:
+            current_cad.cad_model_mesh_percent = update_specs['cad_model_mesh_percent']
+            count += 1
+
+        if count > 0:
+            current_cad.save_cad_model_to_db()
+            return {'msg': gettext('cad_model_updated_successfully').format(current_cad.cad_model_name)}, 200
+        return {'msg': gettext('cad_model_update_info_empty')}

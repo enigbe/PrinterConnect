@@ -6,7 +6,8 @@ from werkzeug.datastructures import FileStorage
 from flask_uploads import UploadSet, IMAGES
 
 # Basic neutral CAD files
-CAD_MODELS = tuple('stp step stl igs iges x_t x_b vrml x3d dae dxf ipt'.split())
+CAD_MODELS = tuple(
+    'stp step stl igs iges x_t x_b vrml x3d dae dxf ipt sldprt'.split())
 IMAGE_SET = UploadSet('images', IMAGES)
 CAD_MODEL_SET = UploadSet('models', CAD_MODELS)
 

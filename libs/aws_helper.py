@@ -2,7 +2,6 @@ import os
 import uuid
 from typing import Dict, List
 
-
 import boto3
 from botocore.exceptions import ClientError, EndpointConnectionError
 from requests import post

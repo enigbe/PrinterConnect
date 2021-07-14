@@ -59,6 +59,8 @@
   "cad_model_does_not_exist": "CAD model does not exist",
   "cad_model_not_visible": "CAD model found but not visible",
   "cad_model_delete_successful": "Successfully deleted CAD model with name '{}'",
-  "cad_model_update_info_empty": "No modification made to CAD model",
-  "cad_model_name_cannot_be_empty": "CAD model name field cannot be empty"
+  "cad_model_update_info_empty": "No modification made to CAD model. Empty update parameters",
+  "cad_model_name_cannot_be_empty": "CAD model name field cannot be empty",
+  "cad_model_updated_successfully": "Successfully updated CAD model: {}",
+  "cad_model_invalid_extension": "Invalid extension type"
 }
