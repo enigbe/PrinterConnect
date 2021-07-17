@@ -99,3 +99,26 @@ class CADModelResourceTest(BaseTest):
                 patch_resp = test_client.patch(
                     f'/client/cad_model/{cad_model_data["cad_model_name"]}', data=cad_model_update_data, headers=header)
                 print(patch_resp)
+
+
+class CADModelListTest(BaseTest):
+    def test_get_cad_model_list(self):
+        with self.app() as test_client:
+            with self.app_context():
+                # Create authorization header
+                access_token = create_access_token(identity=1, fresh=True)
+                header = {'Authorization': f'Bearer {access_token}'}
+                self.assertIsNone(CADModel.find_cad_model_by_id(1))
+                # Create and save a client to DB
+                sample_client = ClientModel(**client)
+                self.assertIsNone(ClientModel.find_client_by_id(1))
+                sample_client.save_client_to_db()
+                self.assertIsNotNone(ClientModel.find_client_by_id(1))
+
+                post_resp = test_client.post(
+                    f'/client/cad_model/{cad_model_data["cad_model_name"]}', data=cad_model_data, headers=header)
+                self.assertEqual(post_resp.status_code, 200)
+                client_name = client['username']
+                get_list_resp = test_client.get(
+                    f'/client/{client_name}/cad_model')
+                self.assertListEqual(get_list_resp.json['cad_models'], [cad_model_data])

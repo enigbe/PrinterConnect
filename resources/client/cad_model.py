@@ -1,16 +1,11 @@
-import re
-from botocore import client
-import requests
-
 from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models.client.client import ClientModel
-from schema.client.cad_model import CADModelSchema, CADSpecificationSchema
+from schema.client.cad_model import CADSpecificationSchema
 from models.client.cad_model import CADModel
 from libs.strings import gettext
-from libs.upload_helper import get_extension, CAD_MODELS
 from libs.aws_helper import (
     s3_client,
     bucket_name,
@@ -64,7 +59,7 @@ class CADModelResource(Resource):
         if cad_model is None:
             return {'msg': gettext('cad_model_does_not_exist')}, 400
 
-        if cad_model.cad_model_visibility == False:
+        if not cad_model.cad_model_visibility:
             return {'msg': gettext('cad_model_not_visible')}, 403
 
         valid_cad_model = CADSpecificationSchema().dump(cad_model)
@@ -168,6 +163,7 @@ class CADModelList(Resource):
         if client is None:
             return {'msg': gettext('client_profile_client_does_not_exist')}, 400
         # 2. Return the list of models in found client's collection
+        model_schema = CADSpecificationSchema(only=cad_spec_keys, partial=True)
         return {
-            'cad_models': client.cad_models_list
+            'cad_models': list(map(lambda x: model_schema.dump(x), client.cad_models_list))
         }, 200
