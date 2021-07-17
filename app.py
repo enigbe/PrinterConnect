@@ -21,7 +21,7 @@ from resources.client.sign_out import SignOut
 from resources.client.client_profile import ClientProfile
 from resources.client.token_refresh import TokenRefresh, BlockedTokens
 from resources.client.client_search import ClientSearch
-from resources.client.cad_model import CADModelResource
+from resources.client.cad_model import CADModelResource, CADModelList
 
 from libs.upload_helper import IMAGE_SET, CAD_MODEL_SET
 from libs.aws_helper import s3_client, initialize_bucket, bucket_name
@@ -77,10 +77,11 @@ api.add_resource(FacebookAuth, '/client/facebook/auth',
 api.add_resource(Avatar, '/client/avatar')
 api.add_resource(SignOut, '/client/signout')
 api.add_resource(BlockedTokens, '/token/blocked/<string:email>')
-api.add_resource(ClientProfile, '/client/profile')
+api.add_resource(ClientProfile, '/client/profile/<string:username>')
 api.add_resource(TokenRefresh, '/token/refresh')
 api.add_resource(ClientSearch, '/client/profile/search/<string:username>')
-api.add_resource(CADModelResource, '/client/cad_model')
+api.add_resource(CADModelResource, '/client/cad_model/<string:name>')
+api.add_resource(CADModelList, '/client/<string:username>/cad_model')
 api.add_resource(Home, '/')
 api.add_resource(SetPassword, '/client/password')
 

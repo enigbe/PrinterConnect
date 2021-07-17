@@ -95,8 +95,6 @@ searched_client = {
 }
 
 cad_model_data = {
-    'id': 1,
-    'client_id': 1,
     'cad_model_name': 'Test CAD Model',
     'cad_model_height': 12.5,
     'cad_model_length': 12.5,
@@ -104,5 +102,13 @@ cad_model_data = {
     'cad_model_visibility': True,
     'cad_model_material': 'PLA',
     'cad_model_mesh_percent': 50,
-    'cad_object_key': 'client_1/Test_CAD.stp'
+}
+cad_model_update_data = {
+    'cad_model_name': 'Test CAD Model',
+    'cad_model_height': 15,
+    'cad_model_length': 15,
+    'cad_model_width': 15,
+    'cad_model_visibility': False,
+    'cad_model_material': 'ABS',
+    'cad_model_mesh_percent': 25,
 }

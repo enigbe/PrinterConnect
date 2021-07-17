@@ -16,10 +16,9 @@ partial_client_schema = ClientSchema(only=('username', 'bio'))
 class ClientProfile(Resource):
     @classmethod
     @jwt_required()
-    def get(cls):
+    def get(cls, username):
         # 1. Check if client exists in database
-        client_id = get_jwt_identity()
-        client = ClientModel.find_client_by_id(client_id)
+        client = ClientModel.find_client_by_username(username)
 
         if not client:
             return {'msg': gettext('client_profile_client_does_not_exist')}, 400
@@ -28,9 +27,12 @@ class ClientProfile(Resource):
 
     @classmethod
     @jwt_required(fresh=True)
-    def delete(cls):
-        client_id = get_jwt_identity()
-        client = ClientModel.find_client_by_id(client_id)
+    def delete(cls, username):
+        client = ClientModel.find_client_by_username(username)
+
+        if client is not ClientModel.find_client_by_id(get_jwt_identity()):
+            return {'msg': gettext('client_profile_deletion_unauthorized')}, 403
+
         if client:
             try:
                 client.delete_client_from_db()
@@ -38,11 +40,11 @@ class ClientProfile(Resource):
             except Exception as e:
                 client.rollback()
                 return {'msg': str(e)}, 500
-        return {'msg': gettext('client_profile_deletion_unauthorized')}
+        return {'msg': gettext('client_profile_client_does_not_exist')}, 400
 
     @classmethod
     @jwt_required()
-    def patch(cls):
+    def patch(cls, username):
         """
         Update client profile data
         :return: None
@@ -50,8 +52,13 @@ class ClientProfile(Resource):
         # 1. Deserialize client request data
         data = complete_client_schema.load(request.get_json(), partial=True)
         # 2. Get client identity of logged in client via JWT
-        client_id = get_jwt_identity()
-        client = ClientModel.find_client_by_id(client_id)
+        client = ClientModel.find_client_by_username(username)
+
+        if not client:
+            return {'msg': gettext('client_profile_client_does_not_exist')}, 400
+
+        if client is not ClientModel.find_client_by_id(get_jwt_identity()):
+            return {'msg': gettext('client_profile_deletion_unauthorized')}, 403
 
         try:
             if 'email' in data and ClientModel.find_client_by_email(data['email']) is None:
