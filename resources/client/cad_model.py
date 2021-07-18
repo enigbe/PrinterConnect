@@ -15,7 +15,7 @@ from libs.aws_helper import (
 
 cad_spec_keys = (
     'cad_model_name', 'cad_model_height', 'cad_model_width', 'cad_model_length', 'cad_model_material',
-    'cad_model_mesh_percent', 'cad_model_visibility'
+    'cad_model_mesh_percent', 'cad_model_visibility', 'cad_object_key'
 )
 cad_file_keys = ('cad',)
 

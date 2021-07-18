@@ -33,7 +33,6 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
         # load_instance = True
         load_only = ('password', 'oauth_token', 'oauth_token_secret')  # do not include when dumping data
         dump_only = (
-            'id',
             'confirmation',
             # 'oauth_token',
             'oauth_token_secret',

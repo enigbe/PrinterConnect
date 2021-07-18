@@ -7,21 +7,27 @@ from tests.test_data import cad_model_data, client
 
 class CADModelTest(BaseTest):
     def test_create_cad_model(self):
-        cad_model = CADModel(**cad_model_data)
-        schema = CADSpecificationSchema()
-        cad_model_dict = schema.dump(cad_model)
-        self.assertEqual(cad_model_dict['cad_model_width'], 12.5)
-        self.assertEqual(cad_model_dict['cad_model_length'], 12.5)
+        with self.app_context():
+            # Create and save a client to DB
+            sample_client = ClientModel(**client)
+            self.assertIsNone(ClientModel.find_client_by_id(sample_client.id))
+            sample_client.save_client_to_db()
+            self.assertIsNotNone(ClientModel.find_client_by_id(sample_client.id))
+            cad_model = CADModel(client_id=sample_client.id, **cad_model_data)
+            schema = CADSpecificationSchema()
+            cad_model_dict = schema.dump(cad_model)
+            self.assertEqual(cad_model_dict['cad_model_width'], 12.5)
+            self.assertEqual(cad_model_dict['cad_model_length'], 12.5)
 
     def test_save_cad_model(self):
         with self.app_context():
             # Create and save a client to DB
             sample_client = ClientModel(**client)
-            self.assertIsNone(ClientModel.find_client_by_id(1))
+            self.assertIsNone(ClientModel.find_client_by_id(sample_client.id))
             sample_client.save_client_to_db()
-            self.assertIsNotNone(ClientModel.find_client_by_id(1))
+            self.assertIsNotNone(ClientModel.find_client_by_id(sample_client.id))
             # Create CADModel and save to DB
-            cad_model = CADModel(**cad_model_data)
+            cad_model = CADModel(client_id=sample_client.id, **cad_model_data)
             self.assertIsNone(CADModel.find_cad_model_by_id(1))
             cad_model.save_cad_model_to_db()
             self.assertIsNotNone(CADModel.find_cad_model_by_id(1))
@@ -30,11 +36,11 @@ class CADModelTest(BaseTest):
         with self.app_context():
             # Create and save a client to DB
             sample_client = ClientModel(**client)
-            self.assertIsNone(ClientModel.find_client_by_id(1))
+            self.assertIsNone(ClientModel.find_client_by_id(sample_client.id))
             sample_client.save_client_to_db()
-            self.assertIsNotNone(ClientModel.find_client_by_id(1))
+            self.assertIsNotNone(ClientModel.find_client_by_id(sample_client.id))
             # Create CADModel and save to DB
-            cad_model = CADModel(**cad_model_data)
+            cad_model = CADModel(client_id=sample_client.id, **cad_model_data)
             self.assertIsNone(CADModel.find_cad_model_by_id(1))
             cad_model.save_cad_model_to_db()
             self.assertIsNotNone(CADModel.find_cad_model_by_id(1))
@@ -46,11 +52,11 @@ class CADModelTest(BaseTest):
         with self.app_context():
             # Create and save a client to DB
             sample_client = ClientModel(**client)
-            self.assertIsNone(ClientModel.find_client_by_id(1))
+            self.assertIsNone(ClientModel.find_client_by_id(sample_client.id))
             sample_client.save_client_to_db()
-            self.assertIsNotNone(ClientModel.find_client_by_id(1))
+            self.assertIsNotNone(ClientModel.find_client_by_id(sample_client.id))
             # Create CADModel and save to DB
-            cad_model = CADModel(**cad_model_data)
+            cad_model = CADModel(client_id=sample_client.id, **cad_model_data)
             self.assertIsNone(CADModel.find_cad_model_by_id(1))
             cad_model.save_cad_model_to_db()
             self.assertIsNotNone(CADModel.find_cad_model_by_id(1))
@@ -63,11 +69,11 @@ class CADModelTest(BaseTest):
         with self.app_context():
             # Create and save a client to DB
             sample_client = ClientModel(**client)
-            self.assertIsNone(ClientModel.find_client_by_id(1))
+            self.assertIsNone(ClientModel.find_client_by_id(sample_client.id))
             sample_client.save_client_to_db()
-            self.assertIsNotNone(ClientModel.find_client_by_id(1))
+            self.assertIsNotNone(ClientModel.find_client_by_id(sample_client.id))
             # Create CADModel and save to DB
-            cad_model = CADModel(**cad_model_data)
+            cad_model = CADModel(client_id=sample_client.id, **cad_model_data)
             self.assertIsNone(CADModel.find_cad_model_by_id(1))
             cad_model.save_cad_model_to_db()
             self.assertIsNotNone(CADModel.find_cad_model_by_id(1))

@@ -1,5 +1,6 @@
 from time import time
 from uuid import uuid4
+from typing import List
 
 from data_base import db
 
@@ -22,6 +23,10 @@ class ConfirmationModel(db.Model):
         self.id = uuid4().hex
         self.expire_at = int(time()) + EXPIRATION_DELTA
         self.confirmed = False
+
+    @classmethod
+    def find_by_client_id(cls, client_id: str) -> List['ConfirmationModel']:
+        return cls.query.filter_by(client_id=client_id).all()
 
     @classmethod
     def find_by_id(cls, _id: str) -> 'ConfirmationModel':
