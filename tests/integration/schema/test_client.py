@@ -1,3 +1,4 @@
+import unittest
 from marshmallow import ValidationError
 
 from schema.client.client import ClientSchema
@@ -7,6 +8,7 @@ from models.client.confirmation import ConfirmationModel
 from tests.test_data import client, exp_client
 
 
+@unittest.skip("Skipping ClientSchemaTest")
 class ClientSchemaTest(BaseTest):
     def test_load_and_dump(self):
         with self.app_context():

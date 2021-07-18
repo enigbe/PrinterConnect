@@ -29,7 +29,7 @@ class Confirmation(Resource):
         confirmation.confirmed = True
         confirmation.save_to_db()
 
-        return {'msg': gettext('confirmation_successful').format(confirmation.client.update_email)}, 200
+        return {'msg': gettext('confirmation_successful').format(confirmation.client.email)}, 200
 
 
 class ConfirmationByUser(Resource):

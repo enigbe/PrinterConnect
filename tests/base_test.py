@@ -14,20 +14,6 @@ from data_base import db
 class BaseTest(TestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        app.config['GITHUB'] = {
-            'consumer_key': os.getenv('GITHUB_CLIENT_ID'),
-            'consumer_secret': os.getenv('GITHUB_CLIENT_SECRET'),
-        }
-        app.config['TWITTER'] = {
-            'consumer_key': os.getenv('TWITTER_API_KEY'),
-            'consumer_secret': os.getenv('TWITTER_SECRET_KEY'),
-            'signature_method': 'HMAC-SHA1'
-        }
-        app.config['GOOGLE'] = {
-            'consumer_key': os.getenv('GOOGLE_CLIENT_ID'),
-            'consumer_secret': os.getenv('GOOGLE_CLIENT_SECRET'),
-        }
-
         with app.app_context():  # Creates application context and installs app in it
             # Create new database
             db.init_app(app)

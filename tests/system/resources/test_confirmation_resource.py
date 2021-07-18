@@ -7,23 +7,21 @@ from tests.base_test import BaseTest
 from tests.test_data import client
 
 
-class ConfirmationTest(BaseTest):
+class ConfirmationResourceTest(BaseTest):
     def test_confirmation_successfully_created(self):
         with self.app() as test_client:
             with self.app_context():
-                # # 1. Create a client with confirmation
-                # # 2. Get the confirmation
-                # # 3. Assert
-                sample_client = ClientModel(**client.copy())
+                sample_client = ClientModel(**client)
+                self.assertIsNone(ClientModel.find_client_by_email(sample_client.email))
                 sample_client.save_client_to_db()
-
+                self.assertIsNotNone(ClientModel.find_client_by_email(sample_client.email))
                 confirmation = ConfirmationModel(sample_client.id)
                 confirmation.save_to_db()
                 confirmation_id = sample_client.most_recent_confirmation.id
+                self.assertIsNotNone(ConfirmationModel.find_by_client_id(sample_client.id))
                 url = '/client/confirmation/' + confirmation_id
                 response_confirmation = test_client.get(url)
-
-                expected_response = {'msg': 'janedoe@email.com activated successfully. You can now sign in.'}
+                expected_response = {'msg': f'{sample_client.email} activated successfully. You can now sign in.'}
                 self.assertEqual(response_confirmation.status_code, 200)
                 self.assertEqual(response_confirmation.get_json(), expected_response)
 
@@ -32,15 +30,11 @@ class ConfirmationTest(BaseTest):
         with self.app() as test_client:
             with self.app_context():
                 mock_send_verification_email.return_value = Response()
-
                 sample_client = ClientModel(**client.copy())
                 sample_client.save_client_to_db()
-
-                confirmation = ConfirmationModel(1)
+                confirmation = ConfirmationModel(sample_client.id)
                 confirmation.save_to_db()
-
-                response = test_client.post('/client/resend_confirmation/janedoe@email.com')
-
+                response = test_client.post(f'/client/resend_confirmation/{sample_client.email}')
                 mock_send_verification_email.assert_called_once()
                 self.assertEqual(response.status_code, 201)
                 expected = {'msg': 'Verification email resent successfully.'}
@@ -49,14 +43,11 @@ class ConfirmationTest(BaseTest):
     def test_get_client_confirmations(self):
         with self.app() as test_client:
             with self.app_context():
-
                 sample_client = ClientModel(**client.copy())
                 sample_client.save_client_to_db()
-
                 confirmation = ConfirmationModel(sample_client.id)
                 confirmation.save_to_db()
-
-                response = test_client.get('/client/resend_confirmation/janedoe@email.com')
+                response = test_client.get(f'/client/resend_confirmation/{sample_client.email}')
                 self.assertEqual(response.status_code, 200)
                 self.assertIn('current_time', response.get_json())
                 self.assertIn('confirmation', response.get_json())

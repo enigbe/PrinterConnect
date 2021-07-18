@@ -2,7 +2,7 @@ from models.client.confirmation import ConfirmationModel
 from tests.base_test import BaseTest
 from models.client.client import ClientModel
 from schema.client.client import ClientSchema
-from tests.test_data import client, updated_client
+from tests.test_data import client, updated_client_data
 
 client_schema = ClientSchema(only=('email', 'username', 'first_name', 'last_name', 'bio',))
 
@@ -10,57 +10,57 @@ client_schema = ClientSchema(only=('email', 'username', 'first_name', 'last_name
 class ClientTest(BaseTest):
     def test_find_client_with_email(self):
         with self.app_context():
-            sample_client = ClientModel(**client.copy())
+            sample_client = ClientModel(**client)
+            self.assertIsNone(ClientModel.find_client_by_email(sample_client.email))
             sample_client.save_client_to_db()
-
-            expected_client = ClientModel.find_client_by_email('janedoe@email.com')
-            self.assertEqual(expected_client, sample_client)
+            self.assertIsNotNone(ClientModel.find_client_by_email(sample_client.email))
 
     def test_find_client_with_username(self):
         with self.app_context():
-            sample_client = ClientModel(**client.copy())
+            sample_client = ClientModel(**client)
+            self.assertIsNone(ClientModel.find_client_by_username(sample_client.username))
             sample_client.save_client_to_db()
-
-            expected_client = ClientModel.find_client_by_username('jane_d')
-            self.assertEqual(expected_client, sample_client)
+            self.assertIsNotNone(ClientModel.find_client_by_username(sample_client.username))
 
     def test_create_client(self):
         with self.app_context():
-            sample_client = ClientModel(**client.copy())
-
-            self.assertIsNone(ClientModel.find_client_by_email('janedoe@email.com'))
-            sample_client.save_client_to_db()
-            self.assertIsNotNone(ClientModel.find_client_by_email('janedoe@email.com'))
+            with self.app_context():
+                sample_client = ClientModel(**client)
+                self.assertIsNone(ClientModel.find_client_by_username(sample_client.username))
+                sample_client.save_client_to_db()
+                self.assertIsNotNone(ClientModel.find_client_by_username(sample_client.username))
 
     def test_delete_client(self):
         with self.app_context():
-            sample_client = ClientModel(**client.copy())
-
-            sample_client.save_client_to_db()
-
-            self.assertIsNotNone(ClientModel.find_client_by_username('jane_d'))
-            sample_client.delete_client_from_db()
-            self.assertIsNone(ClientModel.find_client_by_username('jane_d'))
+            with self.app_context():
+                sample_client = ClientModel(**client)
+                self.assertIsNone(ClientModel.find_client_by_username(sample_client.username))
+                sample_client.save_client_to_db()
+                self.assertIsNotNone(ClientModel.find_client_by_username(sample_client.username))
+                sample_client.delete_client_from_db()
+                self.assertIsNone(ClientModel.find_client_by_username(sample_client.username))
 
     def test_most_recent_confirmation(self):
         with self.app_context():
-
-            sample_client = ClientModel(**client.copy())
+            sample_client = ClientModel(**client)
+            self.assertIsNone(ClientModel.find_client_by_id(sample_client.id))
             sample_client.save_client_to_db()
-
-            confirmation = ConfirmationModel(1)
+            self.assertIsNotNone(ClientModel.find_client_by_id(sample_client.id))
+            confirmation = ConfirmationModel(sample_client.id)
+            self.assertIsNone(ConfirmationModel.find_by_id(confirmation.id))
             confirmation.save_to_db()
-
+            self.assertIsNotNone(ConfirmationModel.find_by_id(confirmation.id))
             self.assertIsInstance(sample_client.most_recent_confirmation, ConfirmationModel)
 
     def test_update_client(self):
         with self.app_context():
-            sample_client = ClientModel(**client.copy())
+            sample_client = ClientModel(**client)
+            self.assertIsNone(ClientModel.find_client_by_id(sample_client.id))
             sample_client.save_client_to_db()
+            self.assertIsNotNone(ClientModel.find_client_by_id(sample_client.id))
 
-            sample_client.bio = 'Bio updated'
+            existing_client = ClientModel.find_client_by_id(sample_client.id)
+            self.assertNotEqual(existing_client.bio, updated_client_data['bio'])
+            sample_client.bio = updated_client_data['bio']
             sample_client.update_client_in_db()
-
-            self.assertEqual(client_schema.dump(sample_client), updated_client)
-
-
+            self.assertEqual(existing_client.bio, sample_client.bio)

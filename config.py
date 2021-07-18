@@ -3,3 +3,8 @@ import os
 DEBUG = False
 SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL')
 TWITTER_SIGNATURE_METHOD = os.environ.get('TWITTER_SIGNATURE_METHOD')
+aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID']
+aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY']
+MAX_CONTENT_LENGTH = 5 * 1024 * 1024
+SECRET_KEY = os.environ['PRINTERCONNECT_SECRET_KEY']
+JWT_SECRET_KEY = os.environ['PRINTERCONNECT_JWT_SECRET_KEY']

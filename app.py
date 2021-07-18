@@ -21,7 +21,10 @@ from resources.client.sign_out import SignOut
 from resources.client.client_profile import ClientProfile
 from resources.client.token_refresh import TokenRefresh, BlockedTokens
 from resources.client.client_search import ClientSearch
-from libs.image_helper import IMAGE_SET
+from resources.client.cad_model import CADModelResource, CADModelList
+
+from libs.upload_helper import IMAGE_SET, CAD_MODEL_SET
+from libs.aws_helper import s3_client, initialize_bucket, bucket_name
 from dotenv import load_dotenv
 
 from models.client.token_blocklist import TokenBlockListModel
@@ -30,8 +33,11 @@ app = Flask(__name__)
 load_dotenv()
 app.config.from_object("default_config")
 app.config.from_envvar("APPLICATION_SETTINGS")
-patch_request_class(app, 10 * 1024 * 1024)  # 10 MB
+# Flask-Upload Specification
+patch_request_class(app, 5 * 1024 * 1024)  # 5 MB
 configure_uploads(app, IMAGE_SET)
+configure_uploads(app, CAD_MODEL_SET, )
+
 api = Api(app)
 jwt = JWTManager(app)
 migrate = Migrate(app, db)
@@ -41,7 +47,10 @@ db.init_app(app)
 
 @app.before_first_request
 def create_db_tables():
+    # Create all tables in DB
     db.create_all()
+    # AWS S3 bucket
+    initialize_bucket(bucket_name, s3_client)
 
 
 @jwt.token_in_blocklist_loader
@@ -53,7 +62,8 @@ def block_jwt(jwt_header, jwt_data):
 
 api.add_resource(ClientEmailSignUp, '/client/signup/email')
 api.add_resource(Confirmation, '/client/confirmation/<string:confirmation_id>')
-api.add_resource(ConfirmationByUser, '/client/resend_confirmation/<string:email>')
+api.add_resource(ConfirmationByUser,
+                 '/client/resend_confirmation/<string:email>')
 api.add_resource(ClientEmailSignIn, '/client/signin/email')
 api.add_resource(GithubSignIn, '/client/signin/github')
 api.add_resource(GithubAuth, '/client/github/auth', endpoint='github.auth')
@@ -62,13 +72,16 @@ api.add_resource(TwitterAuth, '/client/twitter/auth', endpoint='twitter.auth')
 api.add_resource(GoogleSignIn, '/client/signin/google')
 api.add_resource(GoogleAuth, '/client/google/auth', endpoint='google.auth')
 api.add_resource(FacebookSignIn, '/client/signin/facebook')
-api.add_resource(FacebookAuth, '/client/facebook/auth', endpoint='facebook.auth')
+api.add_resource(FacebookAuth, '/client/facebook/auth',
+                 endpoint='facebook.auth')
 api.add_resource(Avatar, '/client/avatar')
 api.add_resource(SignOut, '/client/signout')
 api.add_resource(BlockedTokens, '/token/blocked/<string:email>')
-api.add_resource(ClientProfile, '/client/profile')
+api.add_resource(ClientProfile, '/client/profile/<string:username>')
 api.add_resource(TokenRefresh, '/token/refresh')
 api.add_resource(ClientSearch, '/client/profile/search/<string:username>')
+api.add_resource(CADModelResource, '/client/cad_model/<string:name>')
+api.add_resource(CADModelList, '/client/<string:username>/cad_model')
 api.add_resource(Home, '/')
 api.add_resource(SetPassword, '/client/password')
 

@@ -5,11 +5,12 @@ from flask_uploads import UploadNotAllowed
 from flask import request, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from libs import image_helper
+from libs import upload_helper
 from libs.strings import gettext
 from schema.avatar import AvatarSchema
 from schema.client.client import ClientSchema
 from models.client.client import ClientModel
+from libs.upload_helper import IMAGE_SET
 
 avatar_schema = AvatarSchema()
 client_schema = ClientSchema(only=('avatar_url',))
@@ -31,7 +32,7 @@ class Avatar(Resource):
         # 3. Create destination folder for client avatar
         folder = "avatars"
         # 4. Search for image filename is folder
-        avatar_path = image_helper.find_image_any_format(filename, folder)
+        avatar_path = upload_helper.find_upload_any_format(IMAGE_SET, filename, folder)
         if avatar_path:
             try:
                 os.remove(avatar_path)
@@ -40,12 +41,15 @@ class Avatar(Resource):
 
         try:
             # Get extension of uploaded image
-            extension = image_helper.get_extension(data['image'].filename)
+            extension = upload_helper.get_extension(data['image'].filename)
             # Create avatar name
             avatar = filename + extension
             # Save avatar to file system
-            avatar_path = image_helper.save_image(
-                data['image'], folder=folder, name=avatar
+            avatar_path = upload_helper.save_upload(
+                uploaded_set=IMAGE_SET,
+                file=data['image'],
+                folder=folder,
+                name=avatar
             )
             # Get client identity
             client_identity = get_jwt_identity()
@@ -55,11 +59,11 @@ class Avatar(Resource):
             client.avatar_filename = filename
             client.save_client_to_db()
 
-            basename = image_helper.get_basename(avatar_path)
+            basename = upload_helper.get_basename(avatar_path)
             return {'msg': gettext('avatar_uploaded').format(basename)}, 200
         except UploadNotAllowed:
             # client.rollback()
-            extension = image_helper.get_extension(data['image'])
+            extension = upload_helper.get_extension(data['image'])
             return {'msg': gettext('avatar_extension_illegal').format(extension)}, 400
 
     @classmethod
@@ -70,13 +74,13 @@ class Avatar(Resource):
         """
         filename = f"client_{get_jwt_identity()}"
         folder = "avatars"
-        avatar = image_helper.find_image_any_format(filename, folder)
+        avatar = upload_helper.find_upload_any_format(IMAGE_SET, filename, folder)
         if avatar:
             return send_file(avatar)
 
         default_filename = 'default-avatar'
         default_folder = 'assets'
-        default_avatar = image_helper.find_image_any_format(default_filename, default_folder)
+        default_avatar = upload_helper.find_upload_any_format(IMAGE_SET, default_filename, default_folder)
         # return {'msg': gettext('avatar_not_found').format(avatar)}, 404
         return send_file(default_avatar)
 
@@ -85,7 +89,7 @@ class Avatar(Resource):
     def delete(cls):
         filename = f"client_{get_jwt_identity()}"
         folder = "avatars"
-        avatar = image_helper.find_image_any_format(filename, folder)
+        avatar = upload_helper.find_upload_any_format(IMAGE_SET, filename, folder)
         client = ClientModel.find_client_by_id(get_jwt_identity())
         if avatar:
             try:
