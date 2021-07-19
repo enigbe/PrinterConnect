@@ -37,10 +37,10 @@ class ClientEmailSignUp(Resource):
             return err.messages, 400
 
         # 2. Check if username or email fields already exist in db
-        if ClientModel.find_client_by_email(data['email']):
+        if ClientModel.find_user_by_email(data['email']):
             return {'msg': gettext('signup_email_already_exists').format(data['email'])}, 400
 
-        elif ClientModel.find_client_by_username(data['username']):
+        elif ClientModel.find_user_by_username(data['username']):
             return {'msg': gettext('signup_username_already_exists').format(data['username'])}, 400
             # 3. If 2 above is false, create a new client and save to db
 

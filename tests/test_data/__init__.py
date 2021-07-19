@@ -115,3 +115,12 @@ cad_model_update_data = {
     'cad_model_material': 'ABS',
     'cad_model_mesh_percent': 25,
 }
+
+# Business details
+business = {
+    'business_name': generate_random_username(),
+    'email': generate_random_email(),
+    'username': generate_random_username(),
+    'password': generate_random_password(),
+    'bio': generate_random_username()
+}

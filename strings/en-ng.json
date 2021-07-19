@@ -63,5 +63,10 @@
   "cad_model_name_cannot_be_empty": "CAD model name field cannot be empty",
   "cad_model_updated_successfully": "Successfully updated CAD model: {}",
   "cad_model_invalid_extension": "Invalid extension type",
-  "cad_model_failed_deletion": "CAD Model deletion failed"
+  "cad_model_failed_deletion": "CAD Model deletion failed",
+  "cad_model_unauthorized_to_post": "Unauthorized to post a new CAD model",
+  "cad_model_unauthorized_to_read": "Unauthorized to post a view/read CAD model",
+  "cad_model_unauthorized_to_delete": "Unauthorized to delete CAD model",
+  "cad_model_unauthorized_to_update": "Unauthorized to delete CAD model",
+  "cad_model_name_mismatch": "CAD model name url parameter and form value mismatch"
 }

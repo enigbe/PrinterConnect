@@ -1,4 +1,5 @@
 from typing import List
+
 from flask import request, url_for
 from requests import Response
 from werkzeug.security import generate_password_hash, check_password_hash
@@ -9,9 +10,10 @@ from libs.strings import gettext
 from models.client.confirmation import ConfirmationModel
 from models.client.token_blocklist import TokenBlockListModel
 from models.client.cad_model import CADModel
+from models.user import UserModel, DBModelUserModel
 
 
-class ClientModel(db.Model):
+class ClientModel(db.Model, UserModel, metaclass=DBModelUserModel):
     __tablename__ = 'clients'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -58,15 +60,15 @@ class ClientModel(db.Model):
         return self.cad_model.order_by(db.desc(CADModel.cad_model_creation_time)).all()
 
     @classmethod
-    def find_client_by_id(cls, _id: int) -> "ClientModel":
+    def find_user_by_id(cls, _id: int) -> "ClientModel":
         return cls.query.filter_by(id=_id).first()
 
     @classmethod
-    def find_client_by_email(cls, email: str) -> "ClientModel":
+    def find_user_by_email(cls, email: str) -> "ClientModel":
         return cls.query.filter_by(email=email).first()
 
     @classmethod
-    def find_client_by_username(cls, username: str) -> "ClientModel":
+    def find_user_by_username(cls, username: str) -> "ClientModel":
         return cls.query.filter_by(username=username).first()
 
     def hash_password(self, password: str):
@@ -93,19 +95,3 @@ class ClientModel(db.Model):
         subject = gettext('client_profile_email_update_subject')
         text_content = gettext('client_profile_email_update_text').format(client_name, new_email)
         return Mailgun.send_email([self.email], subject, text_content)
-
-    def save_client_to_db(self) -> None:
-        db.session.add(self)
-        db.session.commit()
-
-    @staticmethod
-    def update_client_in_db() -> None:
-        db.session.commit()
-
-    def delete_client_from_db(self) -> None:
-        db.session.delete(self)
-        db.session.commit()
-
-    @staticmethod
-    def rollback():
-        db.session.rollback()
