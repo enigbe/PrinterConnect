@@ -6,7 +6,7 @@ from resources.client import sign_out
 from models.client.client import ClientModel
 from resources.client.sign_out import TokenBlockListModel
 from tests.test_data import client
-from libs.client_helper import save_and_confirm_client
+from libs.user_helper import save_and_confirm_user
 
 
 class SignOutTest(BaseTest):
@@ -18,7 +18,7 @@ class SignOutTest(BaseTest):
             with self.app_context():
                 # 1. Save a client to the db
                 new_client = ClientModel(**client.copy())
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 # 2. Mock jwt_required, get_jwt, get_jwt_identity
                 mock_get_jwt.return_value = {'jti': 'JWTIdentity'}
                 mock_get_jwt_identity.return_value = 1
@@ -40,7 +40,7 @@ class SignOutTest(BaseTest):
             with self.app_context():
                 # 1. Save a client to the db
                 new_client = ClientModel(**client.copy())
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 # 2. Mock jwt_required, get_jwt, get_jwt_identity
                 mock_get_jwt.return_value = {'jti': 'JWTIdentity'}
                 mock_get_jwt_identity.return_value = 'janedoe@email.com'

@@ -6,7 +6,7 @@ from models.client.client import ClientModel
 from schema.client.client import ClientSchema
 from o_auth import google
 from libs.strings import gettext
-from libs.client_helper import save_and_confirm_client
+from libs.user_helper import save_and_confirm_user
 
 
 class GoogleSignIn(Resource):
@@ -50,7 +50,7 @@ class GoogleAuth(Resource):
                     }
                 )
                 client = ClientModel(**client_data)
-                save_and_confirm_client(client)
+                save_and_confirm_user(client)
             except Exception as e:
                 # client.rollback()
                 return {'msg': str(e)}, 400

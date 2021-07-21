@@ -1,4 +1,4 @@
-from libs.client_helper import (
+from libs.user_helper import (
     generate_random_username,
     generate_random_email,
     generate_random_password,
@@ -117,7 +117,7 @@ cad_model_update_data = {
 }
 
 # Business details
-business = {
+business_data = {
     'business_name': generate_random_username(),
     'email': generate_random_email(),
     'username': generate_random_username(),

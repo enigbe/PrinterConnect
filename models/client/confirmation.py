@@ -1,8 +1,10 @@
+from __future__ import annotations
 from time import time
 from uuid import uuid4
 from typing import List
 
 from data_base import db
+import models.business.business as business
 
 EXPIRATION_DELTA = 30 * 60  # 30 minutes in seconds
 
@@ -14,19 +16,23 @@ class ConfirmationModel(db.Model):
     expire_at = db.Column(db.Integer, nullable=False)
     confirmed = db.Column(db.Boolean, nullable=False)
     # user_id for either client or business accounts
-    user_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=False)
+    client_id = db.Column(db.Integer, db.ForeignKey('clients.id'), nullable=True)
+    business_id = db.Column(db.Integer, db.ForeignKey('businesses.id'), nullable=True)
 
     client = db.relationship('ClientModel', back_populates='confirmation')
-    # business = db.relationship('BusinessModel', back_populates='confirmation')
+    business = db.relationship('BusinessModel', back_populates='confirmation')
 
-    def __init__(self, user_id: int, **kwargs):
+    def __init__(self, user, **kwargs):
         """
         Instantiates a confirmation for either a business or a client account
         using their user_id (business.id and client.id respectfully)
 
         """
         super().__init__(**kwargs)
-        self.user_id = user_id
+        if user.__class__.__name__ == 'BusinessModel':
+            self.business_id = user.id
+        else:
+            self.client_id = user.id
         self.id = uuid4().hex
         self.expire_at = int(time()) + EXPIRATION_DELTA
         self.confirmed = False

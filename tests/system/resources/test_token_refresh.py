@@ -1,7 +1,7 @@
 from unittest.mock import patch
 
 from tests.test_data import client
-from libs.client_helper import save_and_confirm_client
+from libs.user_helper import save_and_confirm_user
 from models.client.client import ClientModel
 from tests.base_test import BaseTest
 from libs.strings import gettext
@@ -18,7 +18,7 @@ class TokenRefreshTest(BaseTest):
                 # 1. Arrange: Get refresh JWT (authorization) for header
                 new_client = ClientModel(**client.copy())
                 new_client.hash_password(password=client['password'])
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
 
                 signin_request_data = {'email': client['email'], 'password': client['password']}
 
@@ -55,7 +55,7 @@ class TokenRefreshTest(BaseTest):
                 # 1. Arrange: Get refresh JWT (authorization) for header
                 new_client = ClientModel(**client.copy())
                 new_client.hash_password(password=client['password'])
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
 
                 signin_request_data = {'email': client['email'], 'password': client['password']}
                 signin_response = test_client.post(
@@ -84,7 +84,7 @@ class TokenRefreshTest(BaseTest):
                 # 1. Arrange: Create new client and get access and refresh tokens
                 new_client = ClientModel(**client.copy())
                 new_client.hash_password(password=client['password'])
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
 
                 signin_request_data = {'email': client['email'], 'password': client['password']}
 
@@ -116,7 +116,7 @@ class BlockedTokensTest(BaseTest):
                 # 1. Get new client
                 new_client = ClientModel(**client.copy())
                 new_client.hash_password(password=client['password'])
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 # 2. Sign in client and get JWT
                 signin_request_data = {'email': client['email'], 'password': client['password']}
                 signin_response = test_client.post(
@@ -165,7 +165,7 @@ class BlockedTokensTest(BaseTest):
                 # 1. Get new client
                 new_client = ClientModel(**client.copy())
                 new_client.hash_password(password=client['password'])
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 # 2. Sign in client and get JWT
                 signin_request_data = {'email': client['email'], 'password': client['password']}
                 test_client.post(

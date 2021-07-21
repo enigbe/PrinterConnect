@@ -4,7 +4,7 @@ from flask_jwt_extended import create_access_token
 
 from tests.base_test import BaseTest
 from models.client.client import ClientModel
-from libs.client_helper import save_and_confirm_client
+from libs.user_helper import save_and_confirm_user
 from tests.test_data import client, searched_client
 
 
@@ -16,7 +16,7 @@ class ClientProfileTest(BaseTest):
             with self.app_context():
                 # 1. Save and confirm a client to db
                 new_client = ClientModel(**client.copy())
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 # 2. Check the client exist
                 resp = test_client.get('/client/profile')
                 self.assertEqual(resp.json, {'msg': 'Missing Authorization Header'})
@@ -28,7 +28,7 @@ class ClientProfileTest(BaseTest):
                 # 1. Create client
                 data = client.copy()
                 new_client = ClientModel(**data)
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 # 2. Get JWT linked to client's identity
                 access_token = create_access_token(identity=new_client.id)
                 header = {'Authorization': f'Bearer {access_token}'}
@@ -42,7 +42,7 @@ class ClientProfileTest(BaseTest):
             with self.app_context():
                 # 1. Save and confirm a client to db
                 new_client = ClientModel(**client.copy())
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 # 2. Get JWT linked to client's identity
                 access_token = create_access_token(identity=new_client.id, fresh=True)
                 # 3. Check client is not None
@@ -59,7 +59,7 @@ class ClientProfileTest(BaseTest):
             with self.app_context():
                 # 1. Create a client and save to db
                 new_client = ClientModel(**client.copy())
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 self.assertIsNotNone(ClientModel.find_client_by_email(client['email']))
                 # 2. Mock send update email notification
                 mock_send_update_email.return_value = Response()
@@ -81,7 +81,7 @@ class ClientProfileTest(BaseTest):
             with self.app_context():
                 # 1. Create a client and save to db
                 new_client = ClientModel(**client.copy())
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 self.assertIsNotNone(ClientModel.find_client_by_username(client['username']))
                 # 3. Check that username is changed
                 update_username = 'john_d'
@@ -100,7 +100,7 @@ class ClientProfileTest(BaseTest):
             with self.app_context():
                 # 1. Create a client and save to db
                 new_client = ClientModel(**client.copy())
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 self.assertIsNotNone(ClientModel.find_client_by_username(client['username']))
                 # 3. Check that username is changed
                 update_first_name = 'johnson'
@@ -119,7 +119,7 @@ class ClientProfileTest(BaseTest):
             with self.app_context():
                 # 1. Create a client and save to db
                 new_client = ClientModel(**client.copy())
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 self.assertIsNotNone(ClientModel.find_client_by_username(client['username']))
                 # 3. Check that username is changed
                 update_last_name = 'swan'
@@ -138,7 +138,7 @@ class ClientProfileTest(BaseTest):
             with self.app_context():
                 # 1. Create a client and save to db
                 new_client = ClientModel(**client.copy())
-                save_and_confirm_client(new_client)
+                save_and_confirm_user(new_client)
                 self.assertIsNotNone(ClientModel.find_client_by_username(client['username']))
                 # 3. Check that username is changed
                 update_bio = 'bio updated'

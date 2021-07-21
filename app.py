@@ -22,6 +22,7 @@ from resources.client.client_profile import ClientProfile
 from resources.client.token_refresh import TokenRefresh, BlockedTokens
 from resources.client.client_search import ClientSearch
 from resources.client.cad_model import CADModelResource, CADModelList
+from resources.business.signup_email_password import BusinessEmailSignUp
 
 from libs.upload_helper import IMAGE_SET, CAD_MODEL_SET
 from libs.aws_helper import s3_client, initialize_bucket, bucket_name
@@ -82,6 +83,7 @@ api.add_resource(TokenRefresh, '/token/refresh')
 api.add_resource(ClientSearch, '/client/profile/search/<string:username>')
 api.add_resource(CADModelResource, '/client/<string:username>/cad_model/<string:cad_model_name>')
 api.add_resource(CADModelList, '/client/<string:username>/cad_models')
+api.add_resource(BusinessEmailSignUp, '/business/signup/email')
 api.add_resource(Home, '/')
 api.add_resource(SetPassword, '/client/password')
 

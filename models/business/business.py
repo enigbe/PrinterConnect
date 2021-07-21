@@ -4,11 +4,13 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from flask import request, url_for
 
 from datetime import datetime
+
 from data_base import db
 from libs.mailgun import Mailgun
 from libs.strings import gettext
-from models.client.confirmation import ConfirmationModel
+
 from models.user import UserModel, DBModelUserModel
+import models.client.confirmation as mcc
 
 
 class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
@@ -17,7 +19,7 @@ class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
     id = db.Column(db.Integer, primary_key=True)
     business_name = db.Column(db.String(50), unique=True)
     email = db.Column(db.String(50), nullable=True)
-    password = db.Column(db.String(50), nullable=True)
+    password = db.Column(db.String(100), nullable=True)
     username = db.Column(db.String(20), nullable=False, index=True)
     bio = db.Column(db.String(200), nullable=True)
     creation_date = db.Column(db.DateTime, nullable=True)
@@ -34,11 +36,11 @@ class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
         self.creation_date = datetime.utcnow()
 
     def __repr__(self):
-        return f'<Business => @{self.username}: {self.business_name}>'
+        return f'<Business => @{self.username}: {self.business_name} - ({self.email})>'
 
     @property
     def most_recent_confirmation(self) -> 'ConfirmationModel':
-        return self.confirmation.order_by(db.desc(ConfirmationModel.expire_at)).first()
+        return self.confirmation.order_by(db.desc(mcc.ConfirmationModel.expire_at)).first()
 
     @classmethod
     def find_user_by_username(cls, username) -> 'BusinessModel':
