@@ -5,7 +5,7 @@ from flask_jwt_extended import create_refresh_token, create_access_token
 from o_auth import twitter
 from libs.strings import split_name, gettext
 from models.client.client import ClientModel
-from libs.client_helper import save_and_confirm_client
+from libs.user_helper import save_and_confirm_user
 
 
 class TwitterSignIn(Resource):
@@ -55,7 +55,7 @@ class TwitterAuth(Resource):
                 # Create new client and grant access to protected endpoints
                 try:
                     pc_client = ClientModel(**verified_client)
-                    save_and_confirm_client(pc_client)
+                    save_and_confirm_user(pc_client)
                 except Exception as e:
                     pc_client.delete_client_from_db()
                     return {'msg': str(e)}, 400

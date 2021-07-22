@@ -22,7 +22,7 @@ class ClientEmailSignIn(Resource):
             return err.messages, err.valid_data
 
         # 3. Check if email is in db
-        client = ClientModel.find_client_by_email(data['email'])
+        client = ClientModel.find_user_by_email(data['email'])
         if client and client.verify_password(data['password']):
             confirmation = client.most_recent_confirmation
             if confirmation and confirmation.confirmed:

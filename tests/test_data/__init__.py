@@ -1,4 +1,4 @@
-from libs.client_helper import (
+from libs.user_helper import (
     generate_random_username,
     generate_random_email,
     generate_random_password,
@@ -114,4 +114,13 @@ cad_model_update_data = {
     'cad_model_visibility': False,
     'cad_model_material': 'ABS',
     'cad_model_mesh_percent': 25,
+}
+
+# Business details
+business_data = {
+    'business_name': generate_random_username(),
+    'email': generate_random_email(),
+    'username': generate_random_username(),
+    'password': generate_random_password(),
+    'bio': generate_random_username()
 }

@@ -6,7 +6,7 @@ from o_auth import facebook
 from libs.strings import gettext
 from models.client.client import ClientModel
 from models.client.confirmation import ConfirmationModel
-from libs.client_helper import save_and_confirm_client
+from libs.user_helper import save_and_confirm_user
 
 
 class FacebookSignIn(Resource):
@@ -44,7 +44,7 @@ class FacebookAuth(Resource):
                     oauth_token=g.access_token,
                     password=None
                 )
-                save_and_confirm_client(client)
+                save_and_confirm_user(client)
 
             except Exception as e:
                 client.delete_client_from_db()
