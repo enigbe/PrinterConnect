@@ -4,7 +4,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token
 
 from o_auth import github
 from models.client.client import ClientModel
-from models.client.confirmation import ConfirmationModel
+from models.confirmation import ConfirmationModel
 from libs.strings import gettext, split_name
 from libs.user_helper import save_and_confirm_user
 

@@ -1,45 +1,51 @@
 import uuid
 from typing import Dict
 
-from models.client.client import ClientModel
+from flask_jwt_extended import create_access_token, create_refresh_token
+
+from models.confirmation import ConfirmationModel
 from models.business.business import BusinessModel
-from models.client.confirmation import ConfirmationModel
+from models.client.client import ClientModel
 from libs.strings import gettext
 from libs.mailgun import MailgunException
 
 
-def save_and_confirm_user(user_instance: [ClientModel, BusinessModel]):
+def save_and_confirm_user(user_instance):
     """
-    Saves a client instance to the db then creates and saves corresponding confirmation instance
-    for the client instance saved.
+    Saves a user (business or client) instance to the db then creates
+    and saves corresponding confirmation instance for the user instance saved.
     """
     user_instance.save_user_to_db()
     confirmation = ConfirmationModel(user_instance)
-    confirmation.confirmed = True
+    # confirmation.confirmed = True
     confirmation.save_to_db()
 
 
 def generate_random_username():
+    """Generate random username"""
     rand_name = str(uuid.uuid4().hex)[:10]
     return rand_name
 
 
 def generate_random_email():
+    """Generate random email address"""
     pre_symbol = str(uuid.uuid4().hex)[:10]
     post_symbol = 'email.com'
     return f'{pre_symbol}@{post_symbol}'
 
 
 def generate_random_password():
+    """Generate random 15 word password"""
     password = str(uuid.uuid4().hex)[:15]
     return password
 
 
 def generate_random_id():
+    """Generate random 4 digit integer"""
     return int(str(uuid.uuid4().int)[:4])
 
 
-def signup_user_with_email(user_model: [BusinessModel, ClientModel], user_data: Dict) -> tuple:
+def signup_user_with_email(user_model, user_data: Dict) -> tuple:
     """
     Creates a new user (business or client) account given the user model and
     registration data
@@ -66,3 +72,42 @@ def signup_user_with_email(user_model: [BusinessModel, ClientModel], user_data: 
             return {'msg': gettext('signup_account_creation_failed'), 'exception': str(err)}, 500
         else:
             return {'msg': gettext('signup_account_creation_successful')}, 201
+
+
+def signin_user_with_email(user_model, user_data: Dict) -> tuple:
+    user = user_model.find_user_by_email(user_data['email'])
+    if user and user.verify_password(user_data['password']):
+        confirmation = user.most_recent_confirmation
+        if confirmation and confirmation.confirmed:
+            # 4. If 3 above is true, generate an access and refresh token to access protected endpoints
+            access_token = create_access_token(identity=user.id, fresh=True)
+            refresh_token = create_refresh_token(identity=user.id)
+
+            return {
+                       'msg': gettext('signin_successful'),
+                       'access_token': access_token,
+                       'refresh_token': refresh_token
+                   }, 200
+        return {'msg': gettext('signin_account_not_confirmed')}, 401
+    # 5. Return success message and tokens
+    return {'msg': gettext('signin_invalid_credentials')}, 401
+
+
+def confirm_user(user_model_type: str, confirmation_id: str):
+    confirmation = ConfirmationModel.find_by_id(confirmation_id)
+
+    if not confirmation:
+        return {'msg': gettext('confirmation_not_found')}, 404
+
+    if confirmation.has_expired:
+        return {'msg': gettext('confirmation_expired')}, 404
+
+    if confirmation.confirmed:
+        return {'msg': gettext('confirmation_already_confirmed')}, 404
+
+    confirmation.confirmed = True
+    confirmation.save_to_db()
+
+    user = BusinessModel.find_user_by_id(confirmation.business_id) if user_model_type == 'business' else ClientModel.find_user_by_id(confirmation.client_id)
+
+    return {'msg': gettext('confirmation_successful').format(user.email)}, 200

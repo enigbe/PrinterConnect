@@ -7,14 +7,14 @@ from flask_migrate import Migrate
 from data_base import db
 from marsh_mallow import ma
 from o_auth import oauth
+# Client
 from resources.client.signup_email_password import ClientEmailSignUp
-from resources.client.confirmation import Confirmation, ConfirmationByUser
+from resources.confirmation import Confirmation, ConfirmationByUser
 from resources.client.signin_email_password import ClientEmailSignIn
 from resources.client.signin_github import GithubSignIn, GithubAuth
 from resources.client.signin_twitter import TwitterSignIn, TwitterAuth
 from resources.client.signin_google import GoogleSignIn, GoogleAuth
 from resources.client.signin_facebook import FacebookSignIn, FacebookAuth
-from resources.homepage.home import Home
 from resources.client.set_password import SetPassword
 from resources.client.avatar import Avatar
 from resources.client.sign_out import SignOut
@@ -22,7 +22,11 @@ from resources.client.client_profile import ClientProfile
 from resources.client.token_refresh import TokenRefresh, BlockedTokens
 from resources.client.client_search import ClientSearch
 from resources.client.cad_model import CADModelResource, CADModelList
+# Business
 from resources.business.signup_email_password import BusinessEmailSignUp
+from resources.business.signin_email_password import BusinessEmailSignIn
+# General
+from resources.homepage.home import Home
 
 from libs.upload_helper import IMAGE_SET, CAD_MODEL_SET
 from libs.aws_helper import s3_client, initialize_bucket, bucket_name
@@ -61,10 +65,12 @@ def block_jwt(jwt_header, jwt_data):
     return saved_jti is not None
 
 
+# Client Resources
 api.add_resource(ClientEmailSignUp, '/client/signup/email')
-api.add_resource(Confirmation, '/client/confirmation/<string:confirmation_id>')
+api.add_resource(SetPassword, '/client/password')
+api.add_resource(Confirmation, '/<string:user_model_type>/confirmation/<string:confirmation_id>')
 api.add_resource(ConfirmationByUser,
-                 '/client/resend_confirmation/<string:email>')
+                 '/<string:user_model_type>/re_confirmation/<string:email>')
 api.add_resource(ClientEmailSignIn, '/client/signin/email')
 api.add_resource(GithubSignIn, '/client/signin/github')
 api.add_resource(GithubAuth, '/client/github/auth', endpoint='github.auth')
@@ -83,9 +89,11 @@ api.add_resource(TokenRefresh, '/token/refresh')
 api.add_resource(ClientSearch, '/client/profile/search/<string:username>')
 api.add_resource(CADModelResource, '/client/<string:username>/cad_model/<string:cad_model_name>')
 api.add_resource(CADModelList, '/client/<string:username>/cad_models')
+# Business Resources
 api.add_resource(BusinessEmailSignUp, '/business/signup/email')
+api.add_resource(BusinessEmailSignIn, '/business/signin/email')
+# General Resources
 api.add_resource(Home, '/')
-api.add_resource(SetPassword, '/client/password')
 
 
 if __name__ == '__main__':

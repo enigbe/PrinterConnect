@@ -7,7 +7,7 @@ from werkzeug.security import generate_password_hash, check_password_hash
 from data_base import db
 from libs.mailgun import Mailgun
 from libs.strings import gettext
-from models.client.confirmation import ConfirmationModel
+from models.confirmation import ConfirmationModel
 from models.client.token_blocklist import TokenBlockListModel
 from models.client.cad_model import CADModel
 from models.user import UserModel, DBModelUserModel
@@ -82,7 +82,8 @@ class ClientModel(db.Model, UserModel, metaclass=DBModelUserModel):
 
     def send_verification_email(self) -> Response:
         # http://127.0.0.1:5000 + /client/confirmation/<string:confirmation_id>
-        link = request.url_root[:-1] + url_for('confirmation', confirmation_id=self.most_recent_confirmation.id)
+        link = request.url_root[:-1] + url_for('confirmation', user_model_type='client',
+                                               confirmation_id=self.most_recent_confirmation.id)
         client_name = self.first_name
 
         subject = gettext('clientmodel_verification_email_subject')
