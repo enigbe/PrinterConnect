@@ -12,7 +12,7 @@ class SignOut(Resource):
     @jwt_required()
     def post(cls):
         jti = get_jwt()['jti']
-        client = ClientModel.find_client_by_id(get_jwt_identity())
+        client = ClientModel.find_user_by_id(get_jwt_identity())
         revoked_token = TokenBlockListModel(jti=jti, client_id=client.id)
         try:
             revoked_token.save_token_to_db()

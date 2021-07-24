@@ -5,7 +5,7 @@ from flask_jwt_extended import create_refresh_token, create_access_token
 from o_auth import facebook
 from libs.strings import gettext
 from models.client.client import ClientModel
-from models.client.confirmation import ConfirmationModel
+from models.confirmation import ConfirmationModel
 from libs.user_helper import save_and_confirm_user
 
 

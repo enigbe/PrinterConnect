@@ -2,7 +2,6 @@ from unittest.mock import patch
 
 from requests import Response
 
-from libs.strings import gettext
 from tests.base_test import BaseTest
 from tests.test_data import business_data
 from models.business.business import BusinessModel

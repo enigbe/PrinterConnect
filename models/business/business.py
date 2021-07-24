@@ -10,7 +10,7 @@ from libs.mailgun import Mailgun
 from libs.strings import gettext
 
 from models.user import UserModel, DBModelUserModel
-import models.client.confirmation as mcc
+import models.confirmation as mcc
 
 
 class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
@@ -65,7 +65,8 @@ class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
 
     def send_verification_email(self) -> Response:
         # http://127.0.0.1:5000 + /client/confirmation/<string:confirmation_id>
-        link = request.url_root[:-1] + url_for('confirmation', confirmation_id=self.most_recent_confirmation.id)
+        link = request.url_root[:-1] + url_for('confirmation', user_model_type='business',
+                                               confirmation_id=self.most_recent_confirmation.id)
         business_name = self.business_name
 
         subject = gettext('businessmodel_verification_email_subject')
