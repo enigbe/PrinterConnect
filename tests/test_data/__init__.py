@@ -118,6 +118,7 @@ cad_model_update_data = {
 
 # Business details
 business_data = {
+    'id': generate_random_id(),
     'business_name': generate_random_username(),
     'email': generate_random_email(),
     'username': generate_random_username(),

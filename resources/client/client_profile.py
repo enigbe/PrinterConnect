@@ -6,6 +6,7 @@ from models.client.client import ClientModel
 from schema.client.client import ClientSchema
 from libs.strings import gettext
 from libs.mailgun import MailgunException
+from libs.user_helper import read_user, delete_user
 
 complete_client_schema = ClientSchema(
     only=('email', 'username', 'first_name', 'last_name', 'bio', 'avatar_url',)
@@ -19,28 +20,25 @@ class ClientProfile(Resource):
     def get(cls, username):
         # 1. Check if client exists in database
         client = ClientModel.find_user_by_username(username)
-
-        if not client:
-            return {'msg': gettext('client_profile_client_does_not_exist')}, 400
-
-        return {'client': complete_client_schema.dump(client)}, 200
+        logged_in_client_id = get_jwt_identity()
+        return read_user(
+            username=username,
+            user_instance=client,
+            full_user_schema=complete_client_schema,
+            partial_user_schema=partial_client_schema,
+            user_id=logged_in_client_id
+        )
+        # if not client:
+        #     return {'msg': gettext('client_profile_client_does_not_exist')}, 400
+        #
+        # return {'client': complete_client_schema.dump(client)}, 200
 
     @classmethod
     @jwt_required(fresh=True)
     def delete(cls, username):
         client = ClientModel.find_user_by_username(username)
 
-        if client is not ClientModel.find_client_by_id(get_jwt_identity()):
-            return {'msg': gettext('client_profile_deletion_unauthorized')}, 403
-
-        if client:
-            try:
-                client.delete_user_from_db()
-                return {'msg': gettext('client_profile_client_deleted').format(client.username)}, 200
-            except Exception as e:
-                client.rollback()
-                return {'msg': str(e)}, 500
-        return {'msg': gettext('client_profile_client_does_not_exist')}, 400
+        return delete_user(username, client, get_jwt_identity())
 
     @classmethod
     @jwt_required()

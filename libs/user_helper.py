@@ -108,6 +108,36 @@ def confirm_user(user_model_type: str, confirmation_id: str):
     confirmation.confirmed = True
     confirmation.save_to_db()
 
-    user = BusinessModel.find_user_by_id(confirmation.business_id) if user_model_type == 'business' else ClientModel.find_user_by_id(confirmation.client_id)
+    user = BusinessModel.find_user_by_id(confirmation.business_id) \
+        if user_model_type == 'business' \
+        else ClientModel.find_user_by_id(confirmation.client_id)
 
     return {'msg': gettext('confirmation_successful').format(user.email)}, 200
+
+
+def read_user(username, user_instance, full_user_schema, partial_user_schema, user_id: int = None):
+    if user_instance is None:
+        return {'msg': gettext('user_profile_does_not_exist').format(username)}, 400
+    if user_instance.id == user_id:
+        return {'business'
+                if user_instance.__class__.__name__ == 'BusinessModel'
+                else 'client': full_user_schema.dump(user_instance)}, 200
+
+    return {'business'
+            if user_instance.__class__.__name__ == 'BusinessModel'
+            else 'client': partial_user_schema.dump(user_instance)}, 200
+
+
+def delete_user(username, user_instance, user_id: int):
+    if user_instance is None:
+        return {'msg': gettext('user_profile_does_not_exist').format(username)}, 400
+
+    if user_instance.id != user_id:
+        return {'msg': gettext('user_profile_deletion_unauthorized')}, 403
+
+    try:
+        user_instance.delete_user_from_db()
+        return {'msg': gettext('user_profile_client_deleted').format(user_instance.username)}, 200
+    except Exception as e:
+        user_instance.rollback()
+        return {'msg': str(e)}, 500

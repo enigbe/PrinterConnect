@@ -25,6 +25,7 @@ from resources.client.cad_model import CADModelResource, CADModelList
 # Business
 from resources.business.signup_email_password import BusinessEmailSignUp
 from resources.business.signin_email_password import BusinessEmailSignIn
+from resources.business.business_profile import BusinessProfile
 # General
 from resources.homepage.home import Home
 
@@ -92,6 +93,7 @@ api.add_resource(CADModelList, '/client/<string:username>/cad_models')
 # Business Resources
 api.add_resource(BusinessEmailSignUp, '/business/signup/email')
 api.add_resource(BusinessEmailSignIn, '/business/signin/email')
+api.add_resource(BusinessProfile, '/business/<string:username>/profile')
 # General Resources
 api.add_resource(Home, '/')
 

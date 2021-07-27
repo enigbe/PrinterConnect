@@ -73,5 +73,8 @@
   "businessmodel_verification_email_text": "Hello {}, \nWelcome to PrinterConnect. To verify your business account please click on this link: {}",
   "businessmodel_verification_email_subject": "Business Account Verification",
   "business_profile_email_update_subject": "PrinterConnect: Update to business email",
-  "business_profile_email_update_text": "Hello {}, \nYour PrinterConnect business account email was successfully updated to {}."
+  "business_profile_email_update_text": "Hello {}, \nYour PrinterConnect business account email was successfully updated to {}.",
+  "user_profile_does_not_exist": "User with username '{}' does not exist",
+  "user_profile_deletion_unauthorized": "Unauthorized to delete",
+  "user_profile_client_deleted": "User '{}' successfully deleted."
 }
