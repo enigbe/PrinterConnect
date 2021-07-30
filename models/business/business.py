@@ -11,6 +11,7 @@ from libs.strings import gettext
 
 from models.user import UserModel, DBModelUserModel
 import models.confirmation as mcc
+import models.token_blocklist as tbl
 
 
 class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
@@ -30,6 +31,12 @@ class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
         cascade='all, delete-orphan',
         back_populates='business'
     )
+    token_blocklist = db.relationship(
+        'TokenBlockListModel',
+        lazy='dynamic',
+        cascade='all, delete-orphan',
+        back_populates='business'
+    )
 
     def __init__(self, **kwargs):
         super(BusinessModel, self).__init__(**kwargs)
@@ -39,7 +46,7 @@ class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
         return f'<Business => @{self.username}: {self.business_name} - ({self.email})>'
 
     @property
-    def most_recent_confirmation(self) -> 'ConfirmationModel':
+    def most_recent_confirmation(self) -> 'mcc.ConfirmationModel':
         return self.confirmation.order_by(db.desc(mcc.ConfirmationModel.expire_at)).first()
 
     @classmethod

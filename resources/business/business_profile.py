@@ -4,10 +4,10 @@ from flask import request
 
 from models.business.business import BusinessModel
 from schema.business.business import BusinessSchema
-from libs.strings import gettext
-from libs.user_helper import read_user, delete_user
+from libs.user_helper import read_user, delete_user, update_user
 
-complete_business_schema = BusinessSchema(only=('business_name', 'username', 'bio', 'email', 'creation_date',))
+complete_business_schema = BusinessSchema(only=('business_name', 'username', 'bio', 'email', 'creation_date',
+                                                'password',), partial=True)
 partial_business_schema = BusinessSchema(only=('business_name', 'username', 'bio',))
 
 
@@ -28,7 +28,11 @@ class BusinessProfile(Resource):
     @classmethod
     @jwt_required(fresh=True)
     def patch(cls, username):
-        pass
+        update_data = complete_business_schema.load(request.get_json())
+        logged_in_business_id = get_jwt_identity()
+        business = BusinessModel.find_user_by_username(username)
+
+        return update_user(username, update_data, business, logged_in_business_id)
 
     @classmethod
     @jwt_required(fresh=True)

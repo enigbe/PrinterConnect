@@ -3,7 +3,7 @@ from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_requir
 
 from libs.strings import gettext
 from models.client.client import ClientModel
-from models.client.token_blocklist import TokenBlockListModel
+from models.token_blocklist import TokenBlockListModel
 from schema.client.token_blocklist import TokenBlockListSchema
 
 blocked_token_schema = TokenBlockListSchema(many=True)

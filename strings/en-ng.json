@@ -44,6 +44,7 @@
   "client_profile_username_constraint_failed": "Constraint for client username failed. Use unique username.",
   "client_profile_email_update_successful": "Email successfully updated.",
   "client_profile_deletion_unauthorized": "Unauthorized to delete",
+  "client_profile_update_unauthorized": "Unauthorized to update",
   "client_profile_email_update_subject": "PrinterConnect: Update to client email",
   "client_profile_email_update_text": "Hello {}, \nYour PrinterConnect client account email was successfully updated to {}.",
   "update_email_already_exist": "Client with given email already exist.",
@@ -76,5 +77,6 @@
   "business_profile_email_update_text": "Hello {}, \nYour PrinterConnect business account email was successfully updated to {}.",
   "user_profile_does_not_exist": "User with username '{}' does not exist",
   "user_profile_deletion_unauthorized": "Unauthorized to delete",
-  "user_profile_client_deleted": "User '{}' successfully deleted."
+  "user_profile_client_deleted": "User '{}' successfully deleted.",
+  "user_profile_update_successful": "User profile updated successfully"
 }

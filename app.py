@@ -25,6 +25,7 @@ from resources.client.cad_model import CADModelResource, CADModelList
 # Business
 from resources.business.signup_email_password import BusinessEmailSignUp
 from resources.business.signin_email_password import BusinessEmailSignIn
+from resources.business.business_sign_out import BusinessSignOut
 from resources.business.business_profile import BusinessProfile
 # General
 from resources.homepage.home import Home
@@ -33,7 +34,7 @@ from libs.upload_helper import IMAGE_SET, CAD_MODEL_SET
 from libs.aws_helper import s3_client, initialize_bucket, bucket_name
 from dotenv import load_dotenv
 
-from models.client.token_blocklist import TokenBlockListModel
+from models.token_blocklist import TokenBlockListModel
 
 app = Flask(__name__)
 load_dotenv()
@@ -94,6 +95,7 @@ api.add_resource(CADModelList, '/client/<string:username>/cad_models')
 api.add_resource(BusinessEmailSignUp, '/business/signup/email')
 api.add_resource(BusinessEmailSignIn, '/business/signin/email')
 api.add_resource(BusinessProfile, '/business/<string:username>/profile')
+api.add_resource(BusinessSignOut, '/business/signout')
 # General Resources
 api.add_resource(Home, '/')
 

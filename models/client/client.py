@@ -8,7 +8,6 @@ from data_base import db
 from libs.mailgun import Mailgun
 from libs.strings import gettext
 from models.confirmation import ConfirmationModel
-from models.client.token_blocklist import TokenBlockListModel
 from models.client.cad_model import CADModel
 from models.user import UserModel, DBModelUserModel
 

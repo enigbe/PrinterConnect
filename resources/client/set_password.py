@@ -20,7 +20,7 @@ class SetPassword(Resource):
         client_json = request.get_json()  # email and new password
         client_data = client_schema.load(client_json)
 
-        client = ClientModel.find_client_by_email(client_data['email'])
+        client = ClientModel.find_user_by_email(client_data['email'])
 
         if not client:
             return {'msg': gettext('set_password_client_not_found')}, 401
@@ -30,6 +30,6 @@ class SetPassword(Resource):
             return {'msg': gettext('set_password_new_cannot_be_old')}
 
         client.hash_password(client_data['password'])
-        client.save_client_to_db()
+        client.save_user_to_db()
 
         return {'msg': gettext('set_password_updated_successfully')}, 201

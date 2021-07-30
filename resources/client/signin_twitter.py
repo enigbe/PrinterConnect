@@ -49,7 +49,7 @@ class TwitterAuth(Resource):
                 'password': None
             }
 
-            pc_client = ClientModel.find_client_by_email(verified_client['email'])
+            pc_client = ClientModel.find_user_by_email(verified_client['email'])
 
             if not pc_client:
                 # Create new client and grant access to protected endpoints

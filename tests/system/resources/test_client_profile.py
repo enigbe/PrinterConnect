@@ -5,7 +5,7 @@ from flask_jwt_extended import create_access_token
 from tests.base_test import BaseTest
 from models.client.client import ClientModel
 from libs.user_helper import save_and_confirm_user
-from tests.test_data import client
+from tests.test_data import client, successful_update
 
 
 class ClientProfileTest(BaseTest):
@@ -80,7 +80,8 @@ class ClientProfileTest(BaseTest):
                     headers=header
                 )
                 mock_send_update_email.assert_called_once()
-                self.assertEqual(resp.json, {'msg': 'Profile update successful.'})
+
+                self.assertEqual(resp.json, successful_update)
                 self.assertIsNotNone(ClientModel.find_user_by_email(update_email))
 
     def test_update_username_provided(self):
@@ -88,7 +89,7 @@ class ClientProfileTest(BaseTest):
             with self.app_context():
                 # 1. Create a client and save to db
                 new_client = ClientModel(**client)
-                save_and_confirm_user(new_client)
+                new_client.save_user_to_db()
                 self.assertIsNotNone(ClientModel.find_user_by_username(client['username']))
                 # 3. Check that username is changed
                 update_username = 'john_d'
@@ -99,7 +100,7 @@ class ClientProfileTest(BaseTest):
                     json={'username': update_username},
                     headers=header
                 )
-                self.assertEqual(resp.json, {'msg': 'Profile update successful.'})
+                self.assertEqual(resp.json, successful_update)
                 self.assertIsNotNone(ClientModel.find_user_by_username(update_username))
 
     def test_update_first_name_provided(self):
@@ -118,7 +119,7 @@ class ClientProfileTest(BaseTest):
                     json={'first_name': update_first_name},
                     headers=header
                 )
-                self.assertEqual(resp.json, {'msg': 'Profile update successful.'})
+                self.assertEqual(resp.json, successful_update)
                 self.assertEqual(new_client.first_name, update_first_name)
 
     def test_update_last_name_provided(self):
@@ -137,7 +138,7 @@ class ClientProfileTest(BaseTest):
                     json={'last_name': update_last_name},
                     headers=header
                 )
-                self.assertEqual(resp.json, {'msg': 'Profile update successful.'})
+                self.assertEqual(resp.json, successful_update)
                 self.assertEqual(new_client.last_name, update_last_name)
 
     def test_update_bio_provided(self):
@@ -156,5 +157,5 @@ class ClientProfileTest(BaseTest):
                     json={'bio': update_bio},
                     headers=header
                 )
-                self.assertEqual(resp.json, {'msg': 'Profile update successful.'})
+                self.assertEqual(resp.json, successful_update)
                 self.assertEqual(new_client.bio, update_bio)

@@ -5,6 +5,7 @@ from flask_jwt_extended import create_access_token, create_refresh_token
 
 from models.confirmation import ConfirmationModel
 from models.business.business import BusinessModel
+from models.token_blocklist import TokenBlockListModel
 from models.client.client import ClientModel
 from libs.strings import gettext
 from libs.mailgun import MailgunException
@@ -17,7 +18,7 @@ def save_and_confirm_user(user_instance):
     """
     user_instance.save_user_to_db()
     confirmation = ConfirmationModel(user_instance)
-    # confirmation.confirmed = True
+    confirmation.confirmed = True
     confirmation.save_to_db()
 
 
@@ -141,3 +142,54 @@ def delete_user(username, user_instance, user_id: int):
     except Exception as e:
         user_instance.rollback()
         return {'msg': str(e)}, 500
+
+
+def update_user(username, update_data, user_instance, user_id: int):
+    if not user_instance:
+        return {'msg': gettext('user_profile_does_not_exist').format(username)}, 400
+    if user_instance.id != user_id:
+        return {'msg': gettext('user_profile_update_unauthorized')}, 403
+
+    try:
+        if 'email' in update_data and ClientModel.find_user_by_email(update_data['email']) is None:
+            try:
+                user_instance.email = update_data['email']
+                user_instance.update_user_in_db()
+                user_instance.send_update_email_notification(user_instance.email)
+            except MailgunException as e:
+                return {'msg': str(e)}, 500
+            except Exception as e:
+                # rollback update
+                return {'msg': str(e)}, 500
+
+        if 'username' in update_data and ClientModel.find_user_by_username(update_data['username']) is None:
+            user_instance.username = update_data['username']
+
+        if 'business_name' in update_data:
+            user_instance.business_name = update_data['business_name']
+
+        if 'first_name' in update_data:
+            user_instance.first_name = update_data['first_name']
+
+        if 'last_name' in update_data:
+            user_instance.last_name = update_data['last_name']
+
+        if 'bio' in update_data:
+            user_instance.bio = update_data['bio']
+
+        user_instance.update_user_in_db()
+        return {'msg': gettext('user_profile_update_successful')}, 200
+    except Exception as e:
+        return {'msg': str(e)}, 500
+
+
+def sign_out_user(user_model, jti, jwt_identity):
+    user = user_model.find_user_by_id(jwt_identity)
+    revoked_token = TokenBlockListModel(jti=jti, business_id=jwt_identity) if isinstance(user, BusinessModel) else \
+        TokenBlockListModel(jti=jti, client_id=jwt_identity)
+    try:
+        revoked_token.save_token_to_db()
+    except Exception as e:
+        return {'msg': gettext('sign_out_token_addition_failed'), 'err': str(e)}
+    else:
+        return {'msg': 'Sign out successful'}, 200

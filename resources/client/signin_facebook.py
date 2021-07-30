@@ -33,7 +33,7 @@ class FacebookAuth(Resource):
         if not facebook_user_email:
             return {'msg': gettext('facebook_authorization_rejected')}
 
-        client = ClientModel.find_client_by_email(facebook_user_email)
+        client = ClientModel.find_user_by_email(facebook_user_email)
         if not client:
             try:
                 client = ClientModel(
@@ -47,7 +47,7 @@ class FacebookAuth(Resource):
                 save_and_confirm_user(client)
 
             except Exception as e:
-                client.delete_client_from_db()
+                client.delete_user_from_db()
                 return {'msg': str(e)}, 400
 
         access_token = create_access_token(identity=client.id, fresh=True)
