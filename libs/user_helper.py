@@ -22,6 +22,12 @@ def save_and_confirm_user(user_instance):
     confirmation.save_to_db()
 
 
+def save_and_create_confirmation(user_instance):
+    user_instance.save_user_to_db()
+    confirmation = ConfirmationModel(user_instance)
+    confirmation.save_to_db()
+
+
 def generate_random_username():
     """Generate random username"""
     rand_name = str(uuid.uuid4().hex)[:10]
@@ -64,7 +70,7 @@ def signup_user_with_email(user_model, user_data: Dict) -> tuple:
         try:
             user = user_model(**user_data)
             user.hash_password(user.password)
-            save_and_confirm_user(user)
+            save_and_create_confirmation(user)
             user.send_verification_email()
         except MailgunException as err:
             user.delete_user_from_db()

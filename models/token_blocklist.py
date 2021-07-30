@@ -2,7 +2,7 @@ from data_base import db
 
 
 class TokenBlockListModel(db.Model):
-    """Model of a valid client token rendered invalid when they sign out"""
+    """Model of a valid user token rendered invalid when they sign out"""
     __tablename__ = 'blocked_tokens'
 
     id = db.Column(db.Integer, primary_key=True)

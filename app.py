@@ -17,7 +17,7 @@ from resources.client.signin_google import GoogleSignIn, GoogleAuth
 from resources.client.signin_facebook import FacebookSignIn, FacebookAuth
 from resources.client.set_password import SetPassword
 from resources.client.avatar import Avatar
-from resources.client.sign_out import SignOut
+from resources.client.client_sign_out import SignOut
 from resources.client.client_profile import ClientProfile
 from resources.client.token_refresh import TokenRefresh, BlockedTokens
 from resources.client.client_search import ClientSearch
