@@ -3,9 +3,9 @@ from typing import Dict
 
 from flask_jwt_extended import create_access_token, create_refresh_token
 
-from models.confirmation import ConfirmationModel
+from models.shared_user.confirmation import ConfirmationModel
 from models.business.business import BusinessModel
-from models.token_blocklist import TokenBlockListModel
+from models.shared_user.token_blocklist import TokenBlockListModel
 from models.client.client import ClientModel
 from libs.strings import gettext
 from libs.mailgun import MailgunException
@@ -199,3 +199,61 @@ def sign_out_user(user_model, jti, jwt_identity):
         return {'msg': gettext('sign_out_token_addition_failed'), 'err': str(e)}
     else:
         return {'msg': 'Sign out successful'}, 200
+
+
+def set_password(reset_data, user_instance, user_id):
+    if not user_instance:
+        return {'msg': gettext('set_password_user_not_found')}, 401
+
+    if user_instance.id != user_id:
+        return {'msg': gettext('set_password_unauthorized_to_set_password')}, 401
+
+    # 1. Check if new password matches old password
+    if user_instance.verify_password(reset_data['password']):
+        return {'msg': gettext('set_password_new_cannot_be_old')}
+
+    user_instance.hash_password(reset_data['password'])
+    user_instance.save_user_to_db()
+
+    return {'msg': gettext('set_password_updated_successfully')}, 201
+
+
+def reset_password_link(user_model, user_email):
+    user = user_model.find_user_by_email(user_email)
+    if user:
+        try:
+            user.send_password_reset_link()
+        except MailgunException as e:
+            return {'msg': str(e)}, 500
+        else:
+            return {'msg': gettext('user_model_password_reset_link_sent')}
+    else:
+        return {'msg': gettext('reset_password_account_does_not_exist').format(user_email)}, 400
+
+
+def reset_password(user_model, reset_data):
+    user_instance = user_model.find_user_by_email(reset_data['email'])
+    if user_instance is None:
+        return {'msg': gettext('reset_password_user_does_not_exist')}, 400
+    if user_instance.verify_password(reset_data['password']):
+        return {'msg': gettext('set_password_new_cannot_be_old')}, 400
+
+    user_instance.hash_password(reset_data['password'])
+    user_instance.save_user_to_db()
+
+    return {'msg': gettext('set_password_updated_successfully')}, 201
+
+
+def blocked_tokens(user_type, email, token_schema):
+    user_model = ClientModel if user_type == 'client' else BusinessModel
+    user = user_model.find_user_by_email(email)
+    if user is None:
+        return {'msg': gettext('blocked_tokens_user_does_not_exist')}, 400
+    blocked_tokens_jti = [
+        token
+        for token in TokenBlockListModel.find_tokens_by_id(user.id)
+    ]
+
+    if len(blocked_tokens_jti) == 0:
+        return {'msg': gettext('token_refresh_token_blocklist_empty')}, 200
+    return {'msg': token_schema.dump(blocked_tokens_jti)}, 200

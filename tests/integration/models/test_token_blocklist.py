@@ -1,7 +1,7 @@
 import unittest
 
 from tests.base_test import BaseTest
-from models.token_blocklist import TokenBlockListModel
+from models.shared_user.token_blocklist import TokenBlockListModel
 from models.client.client import ClientModel
 from tests.test_data import blocked_token, client
 

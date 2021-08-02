@@ -39,6 +39,9 @@ class UserModel(metaclass=ABCMeta):
     @abstractmethod
     def send_update_email_notification(self, new_email) -> Response: pass
 
+    @abstractmethod
+    def send_password_reset_link(self) -> Response: pass
+
     @classmethod
     @abstractmethod
     def find_user_by_id(cls, _id: int) -> 'UserModel': pass

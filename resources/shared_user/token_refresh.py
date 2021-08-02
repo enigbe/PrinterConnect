@@ -1,12 +1,19 @@
+from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import create_access_token, get_jwt_identity, jwt_required
 
 from libs.strings import gettext
+from libs.user_helper import blocked_tokens
 from models.client.client import ClientModel
-from models.token_blocklist import TokenBlockListModel
+from schema.client.client import ClientSchema
+from models.business.business import BusinessModel
+from schema.business.business import BusinessSchema
+from models.shared_user.token_blocklist import TokenBlockListModel
 from schema.client.token_blocklist import TokenBlockListSchema
 
 blocked_token_schema = TokenBlockListSchema(many=True)
+client_schema = ClientSchema(only=('email',))
+business_schema = BusinessSchema(only=('email',))
 
 
 class TokenRefresh(Resource):
@@ -21,19 +28,12 @@ class TokenRefresh(Resource):
 
 class BlockedTokens(Resource):
     @classmethod
-    def get(cls, email):
+    def post(cls, user_type):
         """
-        View all the tokens blocked by a client
+        View all the tokens blocked by a user by developer
         :return: List of blocked tokens
         """
-        client = ClientModel.find_client_by_email(email)
-        if client is None:
-            return {'msg': gettext('client_profile_client_does_not_exist')}, 400
-        blocked_tokens_jti = [
-            token
-            for token in TokenBlockListModel.find_tokens_by_id(client.id)
-        ]
+        user_schema = client_schema if user_type == 'client' else business_schema
+        email_dict = user_schema.load(request.get_json())  # {"email": "email@inc.com"}
 
-        if len(blocked_tokens_jti) == 0:
-            return {'msg': gettext('token_refresh_token_blocklist_empty')}, 200
-        return {'msg': blocked_token_schema.dump(blocked_tokens_jti)}, 200
+        return blocked_tokens(user_type, email_dict['email'], blocked_token_schema)
