@@ -4,7 +4,6 @@ from flask_jwt_extended import create_access_token, create_refresh_token
 
 from o_auth import github
 from models.client.client import ClientModel
-from models.confirmation import ConfirmationModel
 from libs.strings import gettext, split_name
 from libs.user_helper import save_and_confirm_user
 
@@ -40,16 +39,21 @@ class GithubAuth(Resource):
         if not github_email:
             return {'msg': gettext('github_authorization_rejected')}
 
-        client = ClientModel.find_client_by_email(github_email)
+        client = ClientModel.find_user_by_email(github_email)
         if not client:
             try:
                 # 1. create new client
-                client = ClientModel(email=github_email, username=github_username, first_name=fullname[0],
-                                     last_name=fullname[1], password=None, oauth_token=g.access_token
-                                     )
+                client = ClientModel(
+                    email=github_email,
+                    username=github_username,
+                    first_name=fullname[0],
+                    last_name=fullname[1],
+                    password=None,
+                    oauth_token=g.access_token
+                )
                 save_and_confirm_user(client)
             except Exception as e:
-                client.delete_client_from_db()
+                client.delete_user_from_db()
 
                 return {'msg': str(e)}, 400
 

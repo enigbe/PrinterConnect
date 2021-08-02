@@ -35,7 +35,7 @@ class GoogleAuth(Resource):
         if not user_email:
             return {'msg': gettext('google_verification_failed')}
 
-        client = ClientModel.find_client_by_email(user_email)
+        client = ClientModel.find_user_by_email(user_email)
 
         if not client:
             try:

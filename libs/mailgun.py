@@ -4,7 +4,7 @@ from requests import Response, post
 
 MISSING_MAILGUN_API_KEY = 'Missing Mailgun API key.'
 MISSING_MAILGUN_DOMAIN = 'Missing Mailgun Domain.'
-ERROR_SENDING_EMAIL = 'Error in sending verification email. Client registration failed.'
+ERROR_SENDING_EMAIL = 'Error in sending email. User registration failed.'
 MISSING_MAILGUN_EMAIL = 'Missing Mailgun email.'
 
 

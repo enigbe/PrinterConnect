@@ -9,8 +9,9 @@ from data_base import db
 from libs.mailgun import Mailgun
 from libs.strings import gettext
 
-from models.user import UserModel, DBModelUserModel
-import models.confirmation as mcc
+from models.shared_user.user import UserModel, DBModelUserModel
+import models.shared_user.confirmation as mcc
+import models.shared_user.token_blocklist as tbl
 
 
 class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
@@ -30,6 +31,12 @@ class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
         cascade='all, delete-orphan',
         back_populates='business'
     )
+    token_blocklist = db.relationship(
+        'TokenBlockListModel',
+        lazy='dynamic',
+        cascade='all, delete-orphan',
+        back_populates='business'
+    )
 
     def __init__(self, **kwargs):
         super(BusinessModel, self).__init__(**kwargs)
@@ -39,7 +46,7 @@ class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
         return f'<Business => @{self.username}: {self.business_name} - ({self.email})>'
 
     @property
-    def most_recent_confirmation(self) -> 'ConfirmationModel':
+    def most_recent_confirmation(self) -> 'mcc.ConfirmationModel':
         return self.confirmation.order_by(db.desc(mcc.ConfirmationModel.expire_at)).first()
 
     @classmethod
@@ -79,3 +86,13 @@ class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
         subject = gettext('business_profile_email_update_subject')
         text_content = gettext('business_profile_email_update_text').format(business_name, new_email)
         return Mailgun.send_email([self.email], subject, text_content)
+
+    def send_password_reset_link(self) -> Response:
+        # http://127.0.0.1:5001 + /password/reset
+        reset_link = request.url_root[:-1] + url_for('resetpassword')
+        business_name = self.business_name
+        subject = gettext('user_model_reset_password_subject')
+        text = gettext('user_model_reset_password_text').format(business_name, reset_link)
+
+        return Mailgun.send_email([self.email], subject, text)
+

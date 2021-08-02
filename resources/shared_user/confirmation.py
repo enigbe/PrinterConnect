@@ -7,7 +7,7 @@ from libs.mailgun import MailgunException
 from libs.strings import gettext
 from models.client.client import ClientModel
 from models.business.business import BusinessModel
-from models.confirmation import ConfirmationModel
+from models.shared_user.confirmation import ConfirmationModel
 from schema.client.confirmation import ConfirmationSchema
 from libs.user_helper import confirm_user
 

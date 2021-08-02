@@ -17,6 +17,7 @@ client = {
 updated_client_data = {
     'bio': 'Bio updated'
 }
+successful_update = {'msg': 'User profile updated successfully'}
 
 client_profile = {
     'email': generate_random_email(),
@@ -118,6 +119,14 @@ cad_model_update_data = {
 
 # Business details
 business_data = {
+    'id': generate_random_id(),
+    'business_name': generate_random_username(),
+    'email': generate_random_email(),
+    'username': generate_random_username(),
+    'password': generate_random_password(),
+    'bio': generate_random_username()
+}
+update_business_data = {
     'business_name': generate_random_username(),
     'email': generate_random_email(),
     'username': generate_random_username(),
