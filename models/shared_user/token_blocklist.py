@@ -14,15 +14,20 @@ class TokenBlockListModel(db.Model):
     business = db.relationship('BusinessModel', back_populates='token_blocklist')
 
     def __repr__(self):
-        return '<TokenBlockList: {}: {}>'.format(self.id, self.jti)
+        return '<TokenBlockList - id: {} | jti: {} | client_id: {} | business_id: {}>'.format(self.id, self.jti,
+                                                                                              self.client_id, self.business_id)
 
     @classmethod
     def find_token_by_jti(cls, jti: str) -> "TokenBlockListModel":
         return cls.query.filter_by(jti=jti).first()
 
     @classmethod
-    def find_tokens_by_id(cls, _id: int):
-        return cls.query.filter_by(client_id=_id).all()
+    def find_tokens_by_client_id(cls, client_id: int):
+        return cls.query.filter_by(client_id=client_id).all()
+
+    @classmethod
+    def find_tokens_by_business_id(cls, business_id: int):
+        return cls.query.filter_by(business_id=business_id).all()
 
     def save_token_to_db(self) -> None:
         db.session.add(self)

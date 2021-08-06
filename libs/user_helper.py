@@ -1,5 +1,6 @@
 import uuid
 from typing import Dict
+from random import randint
 
 from flask_jwt_extended import create_access_token, create_refresh_token
 
@@ -50,6 +51,12 @@ def generate_random_password():
 def generate_random_id():
     """Generate random 4 digit integer"""
     return int(str(uuid.uuid4().int)[:4])
+
+
+def generate_random_item(item: tuple):
+    item_length = len(item)
+    max_index = item_length - 1
+    return item[randint(0, max_index)]
 
 
 def signup_user_with_email(user_model, user_data: Dict) -> tuple:

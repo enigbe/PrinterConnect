@@ -3,7 +3,7 @@ from requests import Response
 
 from tests.base_test import BaseTest
 from models.client.client import ClientModel
-from models.client.confirmation import ConfirmationModel
+from models.shared_user.confirmation import ConfirmationModel
 from tests.test_data import client
 
 
@@ -11,22 +11,22 @@ class ConfirmationModelTest(BaseTest):
     def test_save_confirmation_to_db(self):
         with self.app_context():
             sample_client = ClientModel(**client)
-            self.assertIsNone(ClientModel.find_client_by_email(sample_client.email))
-            sample_client.save_client_to_db()
-            self.assertIsNotNone(ClientModel.find_client_by_email(sample_client.email))
+            self.assertIsNone(ClientModel.find_user_by_email(sample_client.email))
+            sample_client.save_user_to_db()
+            self.assertIsNotNone(ClientModel.find_user_by_email(sample_client.email))
             self.assertIsNone(sample_client.most_recent_confirmation)
-            confirmation = ConfirmationModel(sample_client.id)
+            confirmation = ConfirmationModel(sample_client)
             confirmation.save_to_db()
             self.assertIsNotNone(confirmation.find_by_client_id(sample_client.id))
 
     def test_delete_confirmation_from_db(self):
         with self.app_context():
             sample_client = ClientModel(**client)
-            self.assertIsNone(ClientModel.find_client_by_email(sample_client.email))
-            sample_client.save_client_to_db()
-            self.assertIsNotNone(ClientModel.find_client_by_email(sample_client.email))
+            self.assertIsNone(ClientModel.find_user_by_email(sample_client.email))
+            sample_client.save_user_to_db()
+            self.assertIsNotNone(ClientModel.find_user_by_email(sample_client.email))
             self.assertIsNone(sample_client.most_recent_confirmation)
-            confirmation = ConfirmationModel(sample_client.id)
+            confirmation = ConfirmationModel(sample_client)
             confirmation.save_to_db()
             self.assertIsNotNone(sample_client.most_recent_confirmation)
             confirmation.delete_from_db()
@@ -43,7 +43,7 @@ class ConfirmationModelTest(BaseTest):
                 sample_client = client.copy()
                 test_client.post('/client/signup/email', json=sample_client)
                 mock_send_verification_email.assert_called_once()
-                loaded_client = ClientModel.find_client_by_email(sample_client['email'])
+                loaded_client = ClientModel.find_user_by_email(sample_client['email'])
                 confirmation = ConfirmationModel.find_by_client_id(loaded_client.id)
                 for item in confirmation:
                     self.assertIsInstance(item, ConfirmationModel)
@@ -57,7 +57,7 @@ class ConfirmationModelTest(BaseTest):
                 sample_client = client
                 test_client.post('/client/signup/email', json=sample_client)
                 mock_send_verification_email.assert_called_once()
-                loaded_client = ClientModel.find_client_by_email(sample_client['email'])
+                loaded_client = ClientModel.find_user_by_email(sample_client['email'])
                 confirmation = ConfirmationModel.find_by_client_id(loaded_client.id)
                 for item in confirmation:
                     self.assertEqual(item.has_expired, False)
@@ -69,7 +69,7 @@ class ConfirmationModelTest(BaseTest):
                 mock_send_verification_email.return_value = Response()
                 sample_client = client
                 test_client.post('/client/signup/email', json=sample_client)
-                loaded_client = ClientModel.find_client_by_email(sample_client['email'])
+                loaded_client = ClientModel.find_user_by_email(sample_client['email'])
                 mock_send_verification_email.assert_called_once()
                 confirmation = ConfirmationModel.find_by_client_id(loaded_client.id)
                 for item in confirmation:

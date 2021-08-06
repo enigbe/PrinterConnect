@@ -10,8 +10,9 @@ from libs.mailgun import Mailgun
 from libs.strings import gettext
 
 from models.shared_user.user import UserModel, DBModelUserModel
-import models.shared_user.confirmation as mcc
+import models.shared_user.confirmation as conf
 import models.shared_user.token_blocklist as tbl
+import models.business.printer as prnt
 
 
 class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
@@ -38,6 +39,13 @@ class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
         back_populates='business'
     )
 
+    printer = db.relationship(
+        'PrinterModel',
+        lazy='dynamic',
+        cascade='all, delete-orphan',
+        back_populates='business'
+    )
+
     def __init__(self, **kwargs):
         super(BusinessModel, self).__init__(**kwargs)
         self.creation_date = datetime.utcnow()
@@ -47,7 +55,7 @@ class BusinessModel(db.Model, UserModel, metaclass=DBModelUserModel):
 
     @property
     def most_recent_confirmation(self) -> 'mcc.ConfirmationModel':
-        return self.confirmation.order_by(db.desc(mcc.ConfirmationModel.expire_at)).first()
+        return self.confirmation.order_by(db.desc(conf.ConfirmationModel.expire_at)).first()
 
     @classmethod
     def find_user_by_username(cls, username) -> 'BusinessModel':
