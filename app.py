@@ -27,6 +27,7 @@ from resources.business.signup_email_password import BusinessEmailSignUp
 from resources.business.signin_email_password import BusinessEmailSignIn
 from resources.business.business_sign_out import BusinessSignOut
 from resources.business.business_profile import BusinessProfile
+from resources.business.printer import Printer, PrinterList
 # General
 from resources.homepage.home import Home
 
@@ -69,9 +70,6 @@ def block_jwt(jwt_header, jwt_data):
 
 # Client Resources
 api.add_resource(ClientEmailSignUp, '/client/signup/email')
-api.add_resource(Confirmation, '/<string:user_model_type>/confirmation/<string:confirmation_id>')
-api.add_resource(ConfirmationByUser,
-                 '/<string:user_model_type>/re_confirmation/<string:email>')
 api.add_resource(ClientEmailSignIn, '/client/signin/email')
 api.add_resource(GithubSignIn, '/client/signin/github')
 api.add_resource(GithubAuth, '/client/github/auth', endpoint='github.auth')
@@ -93,12 +91,17 @@ api.add_resource(BusinessEmailSignUp, '/business/signup/email')
 api.add_resource(BusinessEmailSignIn, '/business/signin/email')
 api.add_resource(BusinessProfile, '/business/<string:username>/profile')
 api.add_resource(BusinessSignOut, '/business/signout')
+api.add_resource(Printer, '/business/<string:username>/printer/<string:printer_name>')
+api.add_resource(PrinterList, '/business/<string:username>/printers')
 # Shared Resources
 api.add_resource(SetPassword, '/<string:user_type>/<string:username>/profile/password')
 api.add_resource(PasswordResetLink, '/<string:user_type>/password/reset_link')
 api.add_resource(ResetPassword, '/<string:user_type>/password/reset')
 api.add_resource(TokenRefresh, '/token/refresh')
 api.add_resource(BlockedTokens, '/token/blocked/<string:user_type>')
+api.add_resource(Confirmation, '/<string:user_model_type>/confirmation/<string:confirmation_id>')
+api.add_resource(ConfirmationByUser,
+                 '/<string:user_model_type>/re_confirmation/<string:email>')
 # General Resources
 api.add_resource(Home, '/')
 

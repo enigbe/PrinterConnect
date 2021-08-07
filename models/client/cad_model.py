@@ -10,17 +10,13 @@ class CADModel(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     cad_model_id = db.Column(db.String(100), nullable=False)
     cad_model_name = db.Column(db.String(100), nullable=False)
-    # model height in millimeters
     cad_model_height = db.Column(db.Float(precision=2), nullable=False)
-    # model width in millimeters
     cad_model_width = db.Column(db.Float(precision=2), nullable=False)
-    # model length in millimeters
     cad_model_length = db.Column(db.Float(precision=2), nullable=False)
     cad_model_material = db.Column(db.String(100), nullable=False)
     cad_model_mesh_percent = db.Column(
         db.Integer, nullable=False)  # print mesh percentage in %
     cad_model_visibility = db.Column(db.Boolean)
-    # (cad_model_object_key)
     cad_object_key = db.Column(db.Text, nullable=False)
     cad_model_creation_time = db.Column(db.DateTime, nullable=False)
 

@@ -2,7 +2,8 @@ from libs.user_helper import (
     generate_random_username,
     generate_random_email,
     generate_random_password,
-    generate_random_id
+    generate_random_id,
+    generate_random_item
 )
 # Client SignUp POST Request Details
 client = {
@@ -85,7 +86,7 @@ facebook_user_data = {
 }
 
 blocked_token = {
-    'id': 1, 'jti': '1eb0f7f7-9c18-45c6-b297-15873258b328', 'client_id': 1}
+    'id': 1, 'jti': '1eb0f7f7-9c18-45c6-b297-15873258b328', 'client_id': 1, 'business_id': None}
 
 searched_client = {
     'username': generate_random_username(),
@@ -133,3 +134,30 @@ update_business_data = {
     'password': generate_random_password(),
     'bio': generate_random_username()
 }
+
+# Printer details
+print_materials = ('PLA', 'ABS', 'ASA', 'HIPS', 'PETG', 'NYLON', 'CFF', 'PCB', 'PVA',)
+print_file_types = ('STL', 'OBJ', 'AMF', '_3MF', 'PLY', 'STEP', 'IGES')
+printer_data = {
+    "id": generate_random_id(),
+    "name": generate_random_username(),
+    "model": generate_random_username(),
+    "base_width": generate_random_id(),
+    "base_length": generate_random_id(),
+    "height": generate_random_id(),
+    "nozzle_diameter": generate_random_id(),
+    "file_type": generate_random_item(print_file_types),  # Enum (printer_file_type) of 5 popular file types
+    "material": generate_random_item(print_materials)  # Enum (printer_material) of 10 popular materials
+}
+printer_update_data = {
+    "id": generate_random_id(),
+    "name": generate_random_username(),
+    "model": generate_random_username(),
+    "base_width": generate_random_id(),
+    "base_length": generate_random_id(),
+    "height": generate_random_id(),
+    "nozzle_diameter": generate_random_id(),
+    "file_type": generate_random_item(print_file_types),  # Enum (printer_file_type) of 5 popular file types
+    "material": generate_random_item(print_materials)  # Enum (printer_material) of 10 popular materials
+}
+

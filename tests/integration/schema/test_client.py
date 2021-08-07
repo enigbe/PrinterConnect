@@ -4,11 +4,11 @@ from marshmallow import ValidationError
 from schema.client.client import ClientSchema
 from tests.base_test import BaseTest
 from models.client.client import ClientModel
-from models.client.confirmation import ConfirmationModel
+from models.shared_user.confirmation import ConfirmationModel
 from tests.test_data import client, exp_client
 
 
-@unittest.skip("Skipping ClientSchemaTest")
+# @unittest.skip("Skipping ClientSchemaTest")
 class ClientSchemaTest(BaseTest):
     def test_load_and_dump(self):
         with self.app_context():
@@ -17,16 +17,19 @@ class ClientSchemaTest(BaseTest):
 
             # Test Client
             sample_client = ClientModel(**data)
-            sample_client.save_client_to_db()
+            sample_client.save_user_to_db()
 
-            confirmation = ConfirmationModel(sample_client.id)
+            confirmation = ConfirmationModel(sample_client)
             confirmation.save_to_db()
 
-            loaded_client = ClientModel.find_client_by_email('janedoe@email.com')
+            loaded_client = ClientModel.find_user_by_email(sample_client.email)
 
             # Assertion
-            print(client_schema.dump(loaded_client))
-            self.assertEqual(client_schema.dump(loaded_client), exp_client)
+            dumped_client = client_schema.dump(loaded_client)
+            self.assertEqual(dumped_client['first_name'], client['first_name'])
+            self.assertEqual(dumped_client['last_name'], client['last_name'])
+            self.assertEqual(dumped_client['email'], client['email'])
+            self.assertEqual(dumped_client['username'], client['username'])
 
     def test_validate_username_field(self):
         client_schema = ClientSchema()
