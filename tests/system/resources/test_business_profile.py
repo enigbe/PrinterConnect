@@ -86,4 +86,4 @@ class BusinessProfileTest(BaseTest):
             header = {'Authorization': f'Bearer {access_token}'}
             delete_resp = test_client.delete(f'/business/{business_data["username"]}/profile', headers=header)
             self.assertIsNone(BusinessModel.find_user_by_username(business_data['username']))
-            self.assertEqual(delete_resp.json, {'msg': f'User \'{business_data["username"]}\' successfully deleted.'})
+            self.assertEqual(delete_resp.json, {'msg': f'User \'{business_data["username"]}\' successfully deleted'})

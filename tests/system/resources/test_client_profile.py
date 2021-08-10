@@ -58,7 +58,7 @@ class ClientProfileTest(BaseTest):
                 header = {'Authorization': f'Bearer {access_token}'}
                 resp = test_client.delete(f'/client/{client["username"]}/profile', headers=header)
                 self.assertIsNone(ClientModel.find_user_by_username(client['username']))
-                self.assertDictEqual(resp.json, {'msg': f'User \'{client["username"]}\' successfully deleted.'})
+                self.assertDictEqual(resp.json, {'msg': f'User \'{client["username"]}\' successfully deleted'})
 
     @patch.object(ClientModel, 'send_update_email_notification', autospec=True)
     def test_update_email_provided(self, mock_send_update_email):

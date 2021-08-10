@@ -13,8 +13,8 @@ class ClientSearch(Resource):
         partial_client_schema = ClientSchema(only=('username', 'bio',))
         complete_client_schema = ClientSchema(only=('email', 'username', 'first_name', 'last_name', 'avatar_url',
                                                     'bio'))
-        client = ClientModel.find_client_by_id(get_jwt_identity())
-        searched_client = ClientModel.find_client_by_username(username)
+        client = ClientModel.find_user_by_id(get_jwt_identity())
+        searched_client = ClientModel.find_user_by_username(username)
 
         if searched_client is None:
             return {'msg': gettext('client_profile_client_does_not_exist')}, 400

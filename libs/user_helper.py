@@ -256,10 +256,11 @@ def blocked_tokens(user_type, email, token_schema):
     user = user_model.find_user_by_email(email)
     if user is None:
         return {'msg': gettext('blocked_tokens_user_does_not_exist')}, 400
-    blocked_tokens_jti = [
-        token
-        for token in TokenBlockListModel.find_tokens_by_id(user.id)
-    ]
+
+    if user_type == 'client':
+        blocked_tokens_jti = [token for token in TokenBlockListModel.find_tokens_by_client_id(user.id)]
+    else:
+        blocked_tokens_jti = [token for token in TokenBlockListModel.find_tokens_by_business_id(user.id)]
 
     if len(blocked_tokens_jti) == 0:
         return {'msg': gettext('token_refresh_token_blocklist_empty')}, 200

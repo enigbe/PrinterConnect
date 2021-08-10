@@ -16,7 +16,7 @@ class ClientEmailSignUpTest(BaseTest):
             with self.app_context():
                 mocked_send_verification_email.return_value = Response()
 
-                signup_details = client.copy()
+                signup_details = client
 
                 response = test_client.post(
                     '/client/signup/email',
@@ -27,7 +27,7 @@ class ClientEmailSignUpTest(BaseTest):
                 mocked_send_verification_email.assert_called_once()
                 self.assertEqual(201, response.status_code)
 
-                self.assertIsNotNone(ClientModel.find_client_by_username('jane_d'))
+                self.assertIsNotNone(ClientModel.find_user_by_username(client['username']))
                 expected_response = {
                     'msg': 'Client account created successfully. Check your email to activate your account'
                 }
@@ -60,7 +60,7 @@ class ClientEmailSignUpTest(BaseTest):
                 self.assertEqual(400, response.status_code)
 
                 expected_response_data = {
-                    'msg': 'A user with email \'{}\' already exists.'.format('janedoe@email.com')
+                    'msg': 'A user with email \'{}\' already exists.'.format(client['email'])
                 }
                 self.assertEqual(expected_response_data, response.get_json())
 
@@ -89,7 +89,9 @@ class ClientEmailSignUpTest(BaseTest):
 
                 self.assertEqual(400, response.status_code)
 
-                expected_response_data = {'msg': 'A user with username \'{}\' already exists.'.format('jane_d')}
+                expected_response_data = {
+                    'msg': 'A user with username \'{}\' already exists.'.format(client['username'])
+                }
                 self.assertEqual(expected_response_data, response.get_json())
 
     @patch('resources.client.signup_email_password.ClientModel.send_verification_email')

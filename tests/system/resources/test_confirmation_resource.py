@@ -2,7 +2,7 @@ from unittest.mock import patch
 from requests import Response
 
 from models.client.client import ClientModel
-from models.client.confirmation import ConfirmationModel
+from models.shared_user.confirmation import ConfirmationModel
 from tests.base_test import BaseTest
 from tests.test_data import client
 
@@ -12,10 +12,10 @@ class ConfirmationResourceTest(BaseTest):
         with self.app() as test_client:
             with self.app_context():
                 sample_client = ClientModel(**client)
-                self.assertIsNone(ClientModel.find_client_by_email(sample_client.email))
-                sample_client.save_client_to_db()
-                self.assertIsNotNone(ClientModel.find_client_by_email(sample_client.email))
-                confirmation = ConfirmationModel(sample_client.id)
+                self.assertIsNone(ClientModel.find_user_by_email(sample_client.email))
+                sample_client.save_user_to_db()
+                self.assertIsNotNone(ClientModel.find_user_by_email(sample_client.email))
+                confirmation = ConfirmationModel(sample_client)
                 confirmation.save_to_db()
                 confirmation_id = sample_client.most_recent_confirmation.id
                 self.assertIsNotNone(ConfirmationModel.find_by_client_id(sample_client.id))
@@ -25,16 +25,16 @@ class ConfirmationResourceTest(BaseTest):
                 self.assertEqual(response_confirmation.status_code, 200)
                 self.assertEqual(response_confirmation.get_json(), expected_response)
 
-    @patch('resources.client.signup_email_password.ClientModel.send_verification_email')
+    @patch.object(ClientModel, 'send_verification_email')
     def test_confirmation_successfully_resent(self, mock_send_verification_email):
         with self.app() as test_client:
             with self.app_context():
                 mock_send_verification_email.return_value = Response()
-                sample_client = ClientModel(**client.copy())
-                sample_client.save_client_to_db()
-                confirmation = ConfirmationModel(sample_client.id)
+                sample_client = ClientModel(**client)
+                sample_client.save_user_to_db()
+                confirmation = ConfirmationModel(sample_client)
                 confirmation.save_to_db()
-                response = test_client.post(f'/client/resend_confirmation/{sample_client.email}')
+                response = test_client.post(f'/client/re_confirmation/{sample_client.email}')
                 mock_send_verification_email.assert_called_once()
                 self.assertEqual(response.status_code, 201)
                 expected = {'msg': 'Verification email resent successfully.'}
@@ -43,11 +43,11 @@ class ConfirmationResourceTest(BaseTest):
     def test_get_client_confirmations(self):
         with self.app() as test_client:
             with self.app_context():
-                sample_client = ClientModel(**client.copy())
-                sample_client.save_client_to_db()
-                confirmation = ConfirmationModel(sample_client.id)
+                sample_client = ClientModel(**client)
+                sample_client.save_user_to_db()
+                confirmation = ConfirmationModel(sample_client)
                 confirmation.save_to_db()
-                response = test_client.get(f'/client/resend_confirmation/{sample_client.email}')
+                response = test_client.get(f'/client/re_confirmation/{sample_client.email}')
                 self.assertEqual(response.status_code, 200)
                 self.assertIn('current_time', response.get_json())
                 self.assertIn('confirmation', response.get_json())

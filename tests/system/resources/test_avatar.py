@@ -15,8 +15,8 @@ class AvatarTest(BaseTest):
     def test_get_default_avatar_with_jwt(self, mock_send_file):
         with self.app() as test_client:
             with self.app_context():
-                new_client = ClientModel(**client.copy())
-                new_client.save_client_to_db()
+                new_client = ClientModel(**client)
+                new_client.save_user_to_db()
 
                 access_token = create_access_token(identity=new_client.id)
                 header = {'Authorization': 'Bearer {}'.format(access_token)}
@@ -36,8 +36,8 @@ class AvatarTest(BaseTest):
         with self.app() as test_client:
             with self.app_context():
                 # 1. Upload an image
-                new_client = ClientModel(**client.copy())
-                new_client.save_client_to_db()
+                new_client = ClientModel(**client)
+                new_client.save_user_to_db()
 
                 access_token = create_access_token(identity=new_client.id, fresh=True)
                 header = {
@@ -72,8 +72,8 @@ class AvatarTest(BaseTest):
     def test_upload_avatar(self, mock_open, mock_save_image):
         with self.app() as test_client:
             with self.app_context():
-                new_client = ClientModel(**client.copy())
-                new_client.save_client_to_db()
+                new_client = ClientModel(**client)
+                new_client.save_user_to_db()
 
                 access_token = create_access_token(identity=new_client.id, fresh=True)
                 header = {
@@ -101,8 +101,8 @@ class AvatarTest(BaseTest):
         with self.app() as test_client:
             with self.app_context():
                 # 1. Upload an avatar (assert that it was uploaded)
-                new_client = ClientModel(**client.copy())
-                new_client.save_client_to_db()
+                new_client = ClientModel(**client)
+                new_client.save_user_to_db()
 
                 access_token = create_access_token(identity=new_client.id, fresh=True)
                 header = {

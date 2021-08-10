@@ -175,12 +175,11 @@ class CADModelResource(Resource):
 
         if count > 0:
             current_cad.save_cad_model_to_db()
-            return {
-                'msg': gettext('cad_model_updated_successfully').format(current_cad.cad_model_name),
-                'url': url,
-                'fields': fields
-            }, 200
-        return {'msg': gettext('cad_model_update_info_empty')}, 400
+        return {
+            'url': url,
+            'fields': fields
+        }, 200
+        # return {'msg': gettext('cad_model_update_info_empty')}, 400
 
 
 class CADModelList(Resource):

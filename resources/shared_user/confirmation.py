@@ -50,7 +50,7 @@ class ConfirmationByUser(Resource):
                     return {'msg': gettext('confirmation_already_confirmed')}, 400
                 confirmation.force_to_expire()
 
-            new_confirmation = ConfirmationModel(user.id)
+            new_confirmation = ConfirmationModel(user)
             new_confirmation.save_to_db()
 
             user.send_verification_email()
