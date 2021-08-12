@@ -4,8 +4,8 @@ from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from models.client.client import ClientModel
 from schema.client.client import ClientSchema
-from libs.strings import gettext
-from libs.mailgun import MailgunException
+# from libs.strings import gettext
+# from libs.mailgun import MailgunException
 from libs.user_helper import read_user, delete_user, update_user
 
 complete_client_schema = ClientSchema(
