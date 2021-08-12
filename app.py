@@ -42,9 +42,9 @@ load_dotenv()
 app.config.from_object("default_config")
 app.config.from_envvar("APPLICATION_SETTINGS")
 # Flask-Upload Specification
-patch_request_class(app, 5 * 1024 * 1024)  # 5 MB
-configure_uploads(app, IMAGE_SET)
-configure_uploads(app, CAD_MODEL_SET, )
+# patch_request_class(app, 5 * 1024 * 1024)  # 5 MB
+# configure_uploads(app, IMAGE_SET)
+# configure_uploads(app, CAD_MODEL_SET, )
 
 api = Api(app)
 jwt = JWTManager(app)
