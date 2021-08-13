@@ -101,8 +101,8 @@ def create_presigned_post_url(client, bucket_identifier, object_name, fields=Non
 def create_presigned_url(client, bucket_identifier, object_name, expiration=3600):
     """
     Generate a presigned URL to share an S3 object
-
-    :param bucket_name: string
+    :param client: S3 client
+    :param bucket_identifier: string
     :param object_name: string
     :param expiration: Time in seconds for the presigned URL to remain valid
     :return: Presigned URL as string. If error, returns None.
