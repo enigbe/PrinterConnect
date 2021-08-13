@@ -1,7 +1,6 @@
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-# from flask_uploads import configure_uploads, patch_request_class
 from flask_migrate import Migrate
 
 from data_base import db
@@ -30,8 +29,6 @@ from resources.business.business_profile import BusinessProfile
 from resources.business.printer import Printer, PrinterList
 # General
 from resources.homepage.home import Home
-
-from libs.upload_helper import IMAGE_SET, CAD_MODEL_SET
 from libs.aws_helper import s3_client, initialize_bucket, bucket_name
 from dotenv import load_dotenv
 
@@ -41,10 +38,6 @@ app = Flask(__name__)
 load_dotenv()
 app.config.from_object("default_config")
 app.config.from_envvar("APPLICATION_SETTINGS")
-# Flask-Upload Specification
-# patch_request_class(app, 5 * 1024 * 1024)  # 5 MB
-# configure_uploads(app, IMAGE_SET)
-# configure_uploads(app, CAD_MODEL_SET, )
 
 api = Api(app)
 jwt = JWTManager(app)

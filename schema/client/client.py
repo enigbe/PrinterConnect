@@ -2,8 +2,6 @@ from marshmallow import fields, validate, pre_dump
 
 from models.client.client import ClientModel
 from marsh_mallow import ma
-from libs import upload_helper
-from libs.upload_helper import IMAGE_SET
 from libs.strings import gettext
 
 
@@ -40,24 +38,6 @@ class ClientSchema(ma.SQLAlchemyAutoSchema):
             'token_blocklist'
             'avatar_filename',
         )  # do not include when loading data
-
-    avatar_url = fields.Method(serialize='dump_avatar_url')
-
-    @staticmethod
-    def dump_avatar_url(client: ClientModel):
-        # Default avatar config
-        avatar_filename = 'default-avatar'
-        folder = 'assets'
-        default_avatar_path = upload_helper.find_upload_any_format(IMAGE_SET, avatar_filename, folder)
-        # Uploaded avatar config
-        if client.avatar_filename and client.avatar_uploaded is True:
-            folder = 'avatars'
-            avatar_path = upload_helper.find_upload_any_format(IMAGE_SET, client.avatar_filename, folder)
-            if avatar_path is None:
-                return gettext('base_url') + default_avatar_path
-            return gettext('base_url') + avatar_path
-
-        return gettext('base_url') + default_avatar_path
 
     @pre_dump
     def _pre_dump(self, client: ClientModel, **kwargs):

@@ -2,8 +2,6 @@ from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
 from libs.strings import gettext
-from schema.avatar import AvatarSchema
-from schema.client.client import ClientSchema
 from models.client.client import ClientModel
 from libs.aws_helper import (
     create_presigned_post_url,
@@ -11,9 +9,6 @@ from libs.aws_helper import (
     bucket_name,
     create_presigned_url
 )
-
-avatar_schema = AvatarSchema()
-client_schema = ClientSchema(only=('avatar_url',))
 
 
 class Avatar(Resource):
