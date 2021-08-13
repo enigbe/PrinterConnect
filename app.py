@@ -1,7 +1,7 @@
 from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
-from flask_uploads import configure_uploads, patch_request_class
+# from flask_uploads import configure_uploads, patch_request_class
 from flask_migrate import Migrate
 
 from data_base import db
