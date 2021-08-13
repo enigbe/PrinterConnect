@@ -30,13 +30,15 @@
   "google_redirect_url_error": "Your request to sign in with google is denied. Authorization failed.",
   "google_verification_failed": "Verification failed. User email is missing or unverified.",
   "facebook_authorization_rejected": "Authorization rejected. Facebook email is empty.",
-  "avatar_uploaded": "Avatar '{}' uploaded.",
+  "avatar_uploaded": "Avatar uploaded successfully",
   "avatar_extension_illegal": "Extension '{}' is not allowed.",
   "avatar_illegal_file_name": "Illegal filename '{}' requested.",
   "avatar_not_found": "Avatar '{}' not found.",
-  "avatar_deleted": "Avatar '{}' deleted successfully.",
+  "avatar_deleted": "Avatar deleted successfully.",
   "avatar_delete_failed": "Internal server error. Avatar deletion failed.",
   "extension_not_allowed": "Image extension type not allowed.",
+  "avatar_upload_failed": "Failed to upload avatar to S3",
+
   "client_profile_client_does_not_exist": "Client does not exist.",
   "client_profile_client_deleted": "Client '{}' successfully deleted.",
   "client_profile_patch_permission_denied": "Profile update permission denied. Unauthorized to update '{}' profile.",
@@ -49,9 +51,11 @@
   "client_profile_email_update_text": "Hello {}, \nYour PrinterConnect client account email was successfully updated to {}.",
   "update_email_already_exist": "Client with given email already exist.",
   "update_email_not_sent": "Empty email field.",
+
   "base_url": "http://localhost:5001/",
   "token_refresh_token_blocklist_empty": "Client token block list is empty.",
   "sign_out_token_addition_failed": "Failed to add token to block list",
+
   "cad_model_saved_successfully": "CAD model saved successfully",
   "cad_model_file_upload_failed": "Failed to upload CAD model files",
   "cad_model_files_already_exist": "CAD model with name '{}' already exists",
@@ -71,10 +75,12 @@
   "cad_model_unauthorized_to_delete": "Unauthorized to delete CAD model",
   "cad_model_unauthorized_to_update": "Unauthorized to delete CAD model",
   "cad_model_name_mismatch": "CAD model name url parameter and form value mismatch",
+
   "businessmodel_verification_email_text": "Hello {}, \nWelcome to PrinterConnect. To verify your business account please click on this link: {}",
   "businessmodel_verification_email_subject": "Business Account Verification",
   "business_profile_email_update_subject": "PrinterConnect: Update to business email",
   "business_profile_email_update_text": "Hello {}, \nYour PrinterConnect business account email was successfully updated to {}.",
+
   "user_profile_does_not_exist": "User with username '{}' does not exist",
   "user_profile_deletion_unauthorized": "Unauthorized to delete",
   "user_profile_client_deleted": "User '{}' successfully deleted",

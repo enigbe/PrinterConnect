@@ -1,19 +1,14 @@
-import os
-import traceback
 from flask_restful import Resource
-from flask_uploads import UploadNotAllowed
-from flask import request, send_file
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
-from libs import upload_helper
 from libs.strings import gettext
-from schema.avatar import AvatarSchema
-from schema.client.client import ClientSchema
 from models.client.client import ClientModel
-from libs.upload_helper import IMAGE_SET
-
-avatar_schema = AvatarSchema()
-client_schema = ClientSchema(only=('avatar_url',))
+from libs.aws_helper import (
+    create_presigned_post_url,
+    s3_client,
+    bucket_name,
+    create_presigned_url
+)
 
 
 class Avatar(Resource):
@@ -21,86 +16,66 @@ class Avatar(Resource):
     @jwt_required(fresh=True)
     def put(cls):
         """
-        Upload an avatar (image) for user. Overwrites avatar if it exists.
-        Uses JWT to extract user identity and save to user's folder. All
-        avatars are named after the client's id: client_{id}.{ext}
+        Get presigned post url to upload avatar to S3
         """
-        # 1. Load FileStorage object/image from client request
-        data = avatar_schema.load(request.files)  # {"image" : FileStorage}
-        # 2. Create image name from current user token
-        filename = f"client_{get_jwt_identity()}"  # client_{janedoe@email.com}
-        # 3. Create destination folder for client avatar
-        folder = "avatars"
-        # 4. Search for image filename is folder
-        avatar_path = upload_helper.find_upload_any_format(IMAGE_SET, filename, folder)
-        if avatar_path:
-            try:
-                os.remove(avatar_path)
-            except UploadNotAllowed:
-                return {'msg': gettext('avatar_delete_failed')}, 500
+        jwt_id = get_jwt_identity()
+        client = ClientModel.find_user_by_id(jwt_id)
+        if client is None:
+            return {'msg': gettext('client_profile_client_does_not_exist')}, 400
 
-        try:
-            # Get extension of uploaded image
-            extension = upload_helper.get_extension(data['image'].filename)
-            # Create avatar name
-            avatar = filename + extension
-            # Save avatar to file system
-            avatar_path = upload_helper.save_upload(
-                uploaded_set=IMAGE_SET,
-                file=data['image'],
-                folder=folder,
-                name=avatar
-            )
-            # Get client identity
-            client_identity = get_jwt_identity()
-            client = ClientModel.find_client_by_id(client_identity)
-            # Set avatar upload and avatar filename
-            client.avatar_uploaded = True
-            client.avatar_filename = filename
-            client.save_client_to_db()
+        # 1. Set object_name
+        avatar_obj_name = f'client_{jwt_id}/avatar'
 
-            basename = upload_helper.get_basename(avatar_path)
-            return {'msg': gettext('avatar_uploaded').format(basename)}, 200
-        except UploadNotAllowed:
-            # client.rollback()
-            extension = upload_helper.get_extension(data['image'])
-            return {'msg': gettext('avatar_extension_illegal').format(extension)}, 400
+        # 2. Create S3 url and fields for upload
+        presigned_resp = create_presigned_post_url(s3_client, bucket_name, avatar_obj_name)
+        return presigned_resp, 200
 
     @classmethod
     @jwt_required()
     def get(cls):
         """
-        Returns the requested image if it exists in the logged in user's folder
+        Returns the link to image if it exists in S3 bucket
         """
-        filename = f"client_{get_jwt_identity()}"
-        folder = "avatars"
-        avatar = upload_helper.find_upload_any_format(IMAGE_SET, filename, folder)
-        if avatar:
-            return send_file(avatar)
+        jwt_id = get_jwt_identity()
+        client = ClientModel.find_user_by_id(jwt_id)
+        if client is None:
+            return {'msg': gettext('client_profile_client_does_not_exist')}, 400
 
-        default_filename = 'default-avatar'
-        default_folder = 'assets'
-        default_avatar = upload_helper.find_upload_any_format(IMAGE_SET, default_filename, default_folder)
-        # return {'msg': gettext('avatar_not_found').format(avatar)}, 404
-        return send_file(default_avatar)
+        avatar_url = create_presigned_url(s3_client, bucket_name, client.avatar_filename)
+        return {'msg': avatar_url}, 200
 
     @classmethod
     @jwt_required(fresh=True)
     def delete(cls):
-        filename = f"client_{get_jwt_identity()}"
-        folder = "avatars"
-        avatar = upload_helper.find_upload_any_format(IMAGE_SET, filename, folder)
-        client = ClientModel.find_client_by_id(get_jwt_identity())
-        if avatar:
+        client = ClientModel.find_user_by_id(get_jwt_identity())
+        if not client:
+            return {'msg': gettext('client_profile_client_does_not_exist')}, 400
+        if client.id != get_jwt_identity():
+            return {'msg': gettext('client_profile_deletion_unauthorized')}, 403
+
+        if client.avatar_uploaded:
+            avatar_obj_name = client.avatar_filename
             try:
-                os.remove(avatar)
-                client.avatar_uploaded = False
-                client.avatar_filename = None
-                client.update_client_in_db()
-                return {'msg': gettext('avatar_deleted').format(filename)}, 200
-            except FileNotFoundError:
-                return {'msg': gettext('avatar_not_found').format(filename)}, 404
-            except:
-                client.rollback()
-                traceback.print_exc()
-                return {'msg': gettext('avatar_delete_failed')}, 500
+                delete_resp = s3_client.delete_object(bucket_name, avatar_obj_name)
+            except Exception as e:
+                return {'msg': str(e)}, 500
+            else:
+                return {'msg': gettext('avatar_deleted')}, 200
+
+
+class AvatarUploaded(Resource):
+    @classmethod
+    @jwt_required()
+    def post(cls, status_code, obj_key):
+        """Update client record with successful S3 upload of avatar"""
+        client = ClientModel.find_user_by_id(get_jwt_identity())
+        if status_code == 204:
+            try:
+                client.avatar_uploaded = True
+                client.avatar_filename = obj_key
+                client.update_user_in_db()
+            except Exception as e:
+                return {'msg': str(e)}, 500
+            else:
+                return {'msg': gettext('avatar_uploaded')}
+        return {'msg': gettext('avatar_upload_failed')}

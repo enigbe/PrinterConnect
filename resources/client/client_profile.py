@@ -9,7 +9,7 @@ from schema.client.client import ClientSchema
 from libs.user_helper import read_user, delete_user, update_user
 
 complete_client_schema = ClientSchema(
-    only=('email', 'username', 'first_name', 'last_name', 'bio', 'avatar_url',)
+    only=('email', 'username', 'first_name', 'last_name', 'bio',)
 )
 partial_client_schema = ClientSchema(only=('username', 'bio'))
 
