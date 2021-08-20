@@ -1,0 +1,205 @@
+openapi: 3.0.0
+info:
+  title: PrinterConnect
+  description: Democratizing access to 3D printers. Find and connect with the right 3D printers for your 3D models
+  version: 0.1.0
+  contact:
+    name: Enigbe Ochekliye
+    email: enigbeos@gmail.com
+    url: https://www.github.com/enigbe
+  license:
+    name: MIT
+    url: https://mit-license.org/
+
+server:
+  url: https://printer-connect.herokuapp.com
+  description: Development server for PrinterConnect
+
+paths:
+  /client/signup/email:
+    post:
+      summary: Create client PrinterConnect account
+      description: Creates a new client account to authenticate traditionally with an email and a password combination
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClientEmailSignUpResponse'
+            example:
+              email: janedoe@email.com
+              username: jane_doe
+              first_name: Jane
+              last_name: Doe
+              password: complexpassword
+
+      responses:
+        '201': # status code
+          description: User account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientEmailSignUpResponse'
+              example:
+                msg: Client account created successfully. Check email to verify your account
+
+        '500':
+          description: Server error creating user account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientEmailSignUpResponse'
+              example:
+                msg: Mailgun error
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ClientEmailSignUpResponse'
+              example:
+                msg: Error creating your account
+
+  /client/signin/google:
+    get:
+      summary: Create client PrinterConnect account with Google login
+      description: Creates a new client account to authenticate with social media account using OAuth2 protocol
+      responses:
+        '201': # status code
+          description: User account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialMediaSignUpResponse'
+              example:
+                access_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjI5MTMwNTg4LCJqdGkiOiI4NGQxNWNmYy0wYmYwLTQ0OWMtYTgyMS02Mjg1NDMxNWQ5N2QiLCJuYmYiOjE2MjkxMzA1ODgsInR5cGUiOiJhY2Nlc3MiLCJzdWIiOjIsImV4cCI6MTYyOTEzMTQ4OH0.yCt6bou5eulyh5-0QjXzbwmc3ytOWZbghSIh3w0LWrA
+                refresh_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjI5MTMwNTg4LCJqdGkiOiI4NGQxNWNmYy0wYmYwLTQ0OWMtYTgyMS02Mjg1NDMxNWQ5N2QiLCJuYmYiOjE2MjkxMzA1ODgsInR5cGUiOiJhY2Nlc3MiLCJzdWIiOjIsImV4cCI6MTYyOTEzMTQ4OH0.yCt6bou5eulyh5-0QjXzbwmc3ytOWZbghSIh3w0LWrA
+        '400':
+          description: Login via social media failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialLoginDenied'
+
+  /client/signin/twitter:
+    get:
+      summary: Create client PrinterConnect account with Twitter login
+      description: Creates a new client account to authenticate with social media account using OAuth2 protocol
+      responses:
+        '201': # status code
+          description: User account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialMediaSignUpResponse'
+              example:
+                access_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjI5MTMwNTg4LCJqdGkiOiI4NGQxNWNmYy0wYmYwLTQ0OWMtYTgyMS02Mjg1NDMxNWQ5N2QiLCJuYmYiOjE2MjkxMzA1ODgsInR5cGUiOiJhY2Nlc3MiLCJzdWIiOjIsImV4cCI6MTYyOTEzMTQ4OH0.yCt6bou5eulyh5-0QjXzbwmc3ytOWZbghSIh3w0LWrA
+                refresh_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjI5MTMwNTg4LCJqdGkiOiI4NGQxNWNmYy0wYmYwLTQ0OWMtYTgyMS02Mjg1NDMxNWQ5N2QiLCJuYmYiOjE2MjkxMzA1ODgsInR5cGUiOiJhY2Nlc3MiLCJzdWIiOjIsImV4cCI6MTYyOTEzMTQ4OH0.yCt6bou5eulyh5-0QjXzbwmc3ytOWZbghSIh3w0LWrA
+
+        '400':
+          description: Login via social media failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialLoginDenied'
+  /client/signup/github:
+    get:
+      summary: Create client PrinterConnect account with Github login
+      description: Creates a new client account to authenticate with social media account using OAuth2 protocol
+      responses:
+        '201': # status code
+          description: User account created successfully
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialMediaSignUpResponse'
+              example:
+                access_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjI5MTMwNTg4LCJqdGkiOiI4NGQxNWNmYy0wYmYwLTQ0OWMtYTgyMS02Mjg1NDMxNWQ5N2QiLCJuYmYiOjE2MjkxMzA1ODgsInR5cGUiOiJhY2Nlc3MiLCJzdWIiOjIsImV4cCI6MTYyOTEzMTQ4OH0.yCt6bou5eulyh5-0QjXzbwmc3ytOWZbghSIh3w0LWrA
+                refresh_token: eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJmcmVzaCI6dHJ1ZSwiaWF0IjoxNjI5MTMwNTg4LCJqdGkiOiI4NGQxNWNmYy0wYmYwLTQ0OWMtYTgyMS02Mjg1NDMxNWQ5N2QiLCJuYmYiOjE2MjkxMzA1ODgsInR5cGUiOiJhY2Nlc3MiLCJzdWIiOjIsImV4cCI6MTYyOTEzMTQ4OH0.yCt6bou5eulyh5-0QjXzbwmc3ytOWZbghSIh3w0LWrA
+        '400':
+          description: Login via social media failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialLoginDenied'
+
+  /client/{username}/profile:
+    get:
+      summary: Returns a profile of authorized client
+      description: Given a client username and authorization header, returns a partial or complete client profile
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: username of client to get
+    delete:
+      summary: Deletes the profile of authorized client
+      description: Given a client username and authorization header, deletes the client profile
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: username of client to get
+    patch:
+      summary: Updates the profile of authorized client
+      description: Given a client username and authorization header, updates the client profile
+      security:
+        - bearerAuth: [ ]
+      parameters:
+        - in: path
+          name: username
+          schema:
+            type: string
+          required: true
+          description: username of client to get
+
+components:
+  schemas:
+    ClientEmailSignUp:
+      properties:
+        email:
+          type: string
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        password:
+          type: string
+      required:
+        - email
+        - username
+        - first_name
+        - last_name
+        - password
+    ClientEmailSignUpResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+    SocialMediaSignUpResponse:
+      type: object
+      properties:
+        access_token:
+          type: string
+        refresh_token:
+          type: string
+  responses:
+    Unauthourized:
+      description: Missing or expired token
+    SocialLoginDenied:
+      description: Error logging in via social media
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: Bearer
+      bearerFormat: JWT
