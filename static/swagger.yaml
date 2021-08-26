@@ -20,12 +20,14 @@ paths:
     post:
       summary: Create client PrinterConnect account
       description: Creates a new client account to authenticate traditionally with an email and a password combination
+      tags:
+        - client auth
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/ClientEmailSignUpResponse'
+              $ref: '#/components/schemas/ClientEmailSignUp'
             example:
               email: janedoe@email.com
               username: jane_doe
@@ -39,7 +41,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientEmailSignUpResponse'
+                $ref: '#/components/schemas/SuccessfulResponse'
               example:
                 msg: Client account created successfully. Check email to verify your account
 
@@ -48,7 +50,7 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientEmailSignUpResponse'
+                $ref: '#/components/schemas/FailureResponse'
               example:
                 msg: Mailgun error
         '400':
@@ -56,14 +58,15 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/ClientEmailSignUpResponse'
+                $ref: '#/components/schemas/FailureResponse'
               example:
                 msg: Error creating your account
-
   /client/signin/google:
     get:
       summary: Create client PrinterConnect account with Google login
       description: Creates a new client account to authenticate with social media account using OAuth2 protocol
+      tags:
+        - client auth
       responses:
         '201': # status code
           description: User account created successfully
@@ -80,11 +83,12 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SocialLoginDenied'
-
   /client/signin/twitter:
     get:
       summary: Create client PrinterConnect account with Twitter login
       description: Creates a new client account to authenticate with social media account using OAuth2 protocol
+      tags:
+        - client auth
       responses:
         '201': # status code
           description: User account created successfully
@@ -106,6 +110,8 @@ paths:
     get:
       summary: Create client PrinterConnect account with Github login
       description: Creates a new client account to authenticate with social media account using OAuth2 protocol
+      tags:
+        - client auth
       responses:
         '201': # status code
           description: User account created successfully
@@ -122,11 +128,33 @@ paths:
             application/json:
               schema:
                 $ref: '#/components/schemas/SocialLoginDenied'
+  /client/signout:
+    post:
+      summary: Sign out
+      description: Signs user out of authorized session
+      tags:
+        - client auth
+      responses:
+        '200': # status code
+          description: Sign out sucessful
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SuccessfulResponse'
+
+        '400':
+          description: Login via social media failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SocialLoginDenied'
 
   /client/{username}/profile:
     get:
       summary: Returns a profile of authorized client
       description: Given a client username and authorization header, returns a partial or complete client profile
+      tags:
+        - client profile
       security:
         - bearerAuth: []
       parameters:
@@ -136,9 +164,26 @@ paths:
             type: string
           required: true
           description: username of client to get
+          example: janedoe
+      responses:
+        '200':
+          description: Successfully retrieved client account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '400':
+          description: Client does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/FailureResponse'
+
     delete:
       summary: Deletes the profile of authorized client
       description: Given a client username and authorization header, deletes the client profile
+      tags:
+        - client profile
       security:
         - bearerAuth: [ ]
       parameters:
@@ -147,10 +192,26 @@ paths:
           schema:
             type: string
           required: true
-          description: username of client to get
+          description: username of client to delete
+          example: janedoe
+      responses:
+        '200':
+          description: Successfully deleted client account
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Client'
+        '400':
+          description: Client does not exist
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schema/FailureResponse'
     patch:
       summary: Updates the profile of authorized client
       description: Given a client username and authorization header, updates the client profile
+      tags:
+        - client profile
       security:
         - bearerAuth: [ ]
       parameters:
@@ -163,6 +224,22 @@ paths:
 
 components:
   schemas:
+    Client:
+      type: object
+      properties:
+        email:
+          type: string
+        username:
+          type: string
+        first_name:
+          type: string
+        last_name:
+          type: string
+        bio:
+          type: string
+        avatar_filename:
+          type: string
+
     ClientEmailSignUp:
       properties:
         email:
@@ -181,7 +258,12 @@ components:
         - first_name
         - last_name
         - password
-    ClientEmailSignUpResponse:
+    SuccessfulResponse:
+      type: object
+      properties:
+        msg:
+          type: string
+    FailureResponse:
       type: object
       properties:
         msg:
@@ -194,12 +276,29 @@ components:
         refresh_token:
           type: string
   responses:
+    Successful:
+      description: Successful response
     Unauthourized:
       description: Missing or expired token
     SocialLoginDenied:
       description: Error logging in via social media
+
   securitySchemes:
     bearerAuth:
       type: http
       scheme: Bearer
       bearerFormat: JWT
+
+tags:
+  - name: client auth
+    description: Authentication of Client Users
+  - name: client profile
+    description: Client Profile
+  - name: cad models
+    description: 3D CAD Model Information
+  - name: business auth
+    description: Authentication of Business Users
+  - name: business profile
+    description: Business Profile
+  - name: printers
+    description: 3D Printer Specifications

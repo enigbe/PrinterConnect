@@ -41,7 +41,7 @@ app.config.from_object("default_config")
 app.config.from_envvar("APPLICATION_SETTINGS")
 
 # Swagger Configuration
-SWAGGER_URL = '/documentation'
+SWAGGER_URL = '/doc'
 SWAGGER_API_URL = '/static/swagger.yaml'
 SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
     SWAGGER_URL,
