@@ -105,7 +105,7 @@ cad_model_data = {
     'cad_model_width': 12.5,
     'cad_model_visibility': True,
     'cad_model_material': 'PLA',
-    'cad_model_mesh_percent': 50
+    'cad_model_mesh_percent': 50,
     # 'cad_object_key': 'client_1/Test CAD Model'
 }
 cad_model_update_data = {

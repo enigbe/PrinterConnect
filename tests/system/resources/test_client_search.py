@@ -27,7 +27,6 @@ class ClientSearchTest(BaseTest):
                 username = client['username']
                 resp = test_client.get(f'/client/profile/search/{username}', headers=header)
                 self.assertEqual(resp.status_code, 200)
-                self.assertIn('avatar_url', resp.json)
 
     def test_search_nonexistent_client(self):
         with self.app() as test_client:
