@@ -22,7 +22,7 @@ For unix computers:
 3. Activate virtual environment: `source venv/bin/activate`
 4. Install project dependencies: `pip install -r requirements.txt`
 3. Run the app: `python app.py`
-4. API endpoints: `GET /documentation` for a list of the API endpoints
+4. API endpoints: `GET /doc` for a list of the API endpoints
 
 ## Dependencies
 
@@ -31,4 +31,4 @@ its features. These dependencies are listed in `requirements.txt`.
 Its first version will be built in Python 3.8
 
 ## Usage (WIP)
-GET `/documentation` previews some of PrinterConnect's APIs. They will be updated over time. 
+GET `/doc` previews some of PrinterConnect's APIs. They will be updated over time. 
