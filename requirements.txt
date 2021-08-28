@@ -13,5 +13,6 @@ flask-uploads
 flask-migrate
 psycopg2
 boto3
-uwsgi
 Pillow
+flask-swagger-ui
+uwsgi

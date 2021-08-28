@@ -12,3 +12,4 @@ UPLOADS_DEFAULT_DEST = os.path.join("static")
 aws_access_key_id = os.environ['AWS_ACCESS_KEY_ID']
 aws_secret_access_key = os.environ['AWS_SECRET_ACCESS_KEY']
 MAX_CONTENT_LENGTH = 5 * 1024 * 1024
+AWS_S3_BUCKET_NAME = os.environ['AWS_S3_BUCKET_NAME']

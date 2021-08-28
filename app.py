@@ -2,6 +2,7 @@ from flask import Flask
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 from flask_migrate import Migrate
+from flask_swagger_ui import get_swaggerui_blueprint
 
 from data_base import db
 from marsh_mallow import ma
@@ -33,16 +34,27 @@ from libs.aws_helper import s3_client, initialize_bucket, bucket_name
 from dotenv import load_dotenv
 
 from models.shared_user.token_blocklist import TokenBlockListModel
-
+# Configurations
 app = Flask(__name__)
 load_dotenv()
 app.config.from_object("default_config")
 app.config.from_envvar("APPLICATION_SETTINGS")
 
+# Swagger Configuration
+SWAGGER_URL = '/doc'
+SWAGGER_API_URL = '/static/swagger.yaml'
+SWAGGERUI_BLUEPRINT = get_swaggerui_blueprint(
+    SWAGGER_URL,
+    SWAGGER_API_URL,
+    config={
+        'app_name': 'PrinterConnect'
+    }
+)
+
 api = Api(app)
 jwt = JWTManager(app)
 migrate = Migrate(app, db)
-
+app.register_blueprint(SWAGGERUI_BLUEPRINT, url_prefix=SWAGGER_URL)
 db.init_app(app)
 
 
