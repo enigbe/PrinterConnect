@@ -40,7 +40,6 @@ class ClientProfileTest(BaseTest):
                 self.assertEqual(resp.json['client']['last_name'], client['last_name'])
                 self.assertEqual(resp.json['client']['username'], client['username'])
                 self.assertEqual(resp.json['client']['email'], client['email'])
-                self.assertIn('avatar_url', resp.json['client'])
                 self.assertIn('bio', resp.json['client'])
 
     def test_delete_client(self):

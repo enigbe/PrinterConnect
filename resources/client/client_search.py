@@ -11,8 +11,7 @@ class ClientSearch(Resource):
     @jwt_required(optional=True)
     def get(cls, username):
         partial_client_schema = ClientSchema(only=('username', 'bio',))
-        complete_client_schema = ClientSchema(only=('email', 'username', 'first_name', 'last_name', 'avatar_url',
-                                                    'bio'))
+        complete_client_schema = ClientSchema(only=('email', 'username', 'first_name', 'last_name', 'bio'))
         client = ClientModel.find_user_by_id(get_jwt_identity())
         searched_client = ClientModel.find_user_by_username(username)
 

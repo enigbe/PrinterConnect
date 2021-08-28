@@ -16,7 +16,7 @@ from resources.client.signin_twitter import TwitterSignIn, TwitterAuth
 from resources.client.signin_google import GoogleSignIn, GoogleAuth
 from resources.client.signin_facebook import FacebookSignIn, FacebookAuth
 from resources.shared_user.set_password import SetPassword, PasswordResetLink, ResetPassword
-from resources.client.avatar import Avatar
+from resources.client.avatar import Avatar, AvatarUploaded
 from resources.client.client_sign_out import SignOut
 from resources.client.client_profile import ClientProfile
 from resources.shared_user.token_refresh import TokenRefresh, BlockedTokens
@@ -86,6 +86,7 @@ api.add_resource(FacebookSignIn, '/client/signin/facebook')
 api.add_resource(FacebookAuth, '/client/facebook/auth',
                  endpoint='facebook.auth')
 api.add_resource(Avatar, '/client/avatar')
+api.add_resource(AvatarUploaded, '/client/post_avatar')
 api.add_resource(SignOut, '/client/signout')
 api.add_resource(ClientProfile, '/client/<string:username>/profile')
 api.add_resource(ClientSearch, '/client/profile/search/<string:username>')

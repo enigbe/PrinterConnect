@@ -1,3 +1,4 @@
+from flask import request
 from flask_restful import Resource
 from flask_jwt_extended import jwt_required, get_jwt_identity
 
@@ -56,23 +57,29 @@ class Avatar(Resource):
         if client.avatar_uploaded:
             avatar_obj_name = client.avatar_filename
             try:
-                delete_resp = s3_client.delete_object(bucket_name, avatar_obj_name)
+                delete_resp = s3_client.delete_object(Bucket=bucket_name, Key=avatar_obj_name)
             except Exception as e:
                 return {'msg': str(e)}, 500
             else:
+                client.avatar_uploaded = False
+                client.avatar_filename = None
                 return {'msg': gettext('avatar_deleted')}, 200
 
 
 class AvatarUploaded(Resource):
     @classmethod
     @jwt_required()
-    def post(cls, status_code, obj_key):
+    def post(cls):
         """Update client record with successful S3 upload of avatar"""
         client = ClientModel.find_user_by_id(get_jwt_identity())
-        if status_code == 204:
+        if not client:
+            return {'msg': gettext('client_profile_client_does_not_exist')}, 400
+
+        data = request.get_json()
+        if data['status_code'] == 204:
             try:
                 client.avatar_uploaded = True
-                client.avatar_filename = obj_key
+                client.avatar_filename = data['obj_key']
                 client.update_user_in_db()
             except Exception as e:
                 return {'msg': str(e)}, 500
